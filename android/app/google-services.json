@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "918261951424",
+    "project_id": "blood-point-632a9",
+    "storage_bucket": "blood-point-632a9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:918261951424:android:e6197c35b1603309b7f625",
+        "android_client_info": {
+          "package_name": "com.example.blood_point"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "918261951424-9ula98t8jifu0mjbi58bbd3d82j4on4b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCeszpt7Sx2G8kDAHzEsmN2wwMeVT52IR8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "918261951424-9ula98t8jifu0mjbi58bbd3d82j4on4b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
