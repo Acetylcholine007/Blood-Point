@@ -10,6 +10,8 @@ class DonorPage extends StatefulWidget {
 class _DonorPageState extends State<DonorPage> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Container(
+      child: Text('Donor Pages'),
+    );
   }
 }

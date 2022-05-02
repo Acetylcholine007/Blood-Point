@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:blood_point/models/AccountData.dart';
+import 'package:blood_point/models/GetRequestResponse.dart';
 import 'package:blood_point/models/History.dart';
 import 'package:blood_point/models/Request.dart';
 
@@ -12,8 +13,8 @@ class DatabaseService {
   static final DatabaseService db = DatabaseService._();
 
   final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
-  final CollectionReference partCollection = FirebaseFirestore.instance.collection('history');
-  final CollectionReference fieldCollection = FirebaseFirestore.instance.collection('requests');
+  final CollectionReference historyCollection = FirebaseFirestore.instance.collection('history');
+  final CollectionReference requestCollection = FirebaseFirestore.instance.collection('requests');
 
   //MAPPING FUNCTION SECTION
   AccountData _accountFromSnapshot(DocumentSnapshot snapshot) {
@@ -33,21 +34,27 @@ class DatabaseService {
   }
 
   Request _requestFromSnapshot(DocumentSnapshot snapshot) {
-    // Map<String, dynamic> fields = snapshot.data() ?? {};
-    // fields.remove('_sortingIndex');
     return Request(
       rid: snapshot.id,
+      uid: snapshot.get('uid') ?? '',
+      message: snapshot.get('message') ?? '',
+      bloodType: snapshot.get('bloodType') ?? '',
+      isComplete: snapshot.get('isComplete') ?? false,
+      donorIds: List<String>.from(snapshot.get('donorIds') as List) ?? [],
     );
   }
   //
   List<Request> _requestListFromSnapshot(QuerySnapshot snapshot) {
     snapshot.docs.map((doc) {
-      print(doc.data());
     });
     return snapshot.docs.map((doc) {
-      Map<String, dynamic> fields = doc.data() ?? {};
       return Request(
         rid: doc.id,
+        uid: doc.get('uid') ?? '',
+        message: doc.get('message') ?? '',
+        bloodType: doc.get('bloodType') ?? '',
+        isComplete: doc.get('isComplete') ?? false,
+        donorIds: List<String>.from(doc.get('donorIds') as List) ?? [],
       );
     }).toList();
   }
@@ -79,73 +86,63 @@ class DatabaseService {
     }).toList();
   }
 
+  Future<AccountData> getAccount(String uid) async {
+    return userCollection.doc(uid).get().then(_accountFromSnapshot);
+  }
+
   // OPERATOR FUNCTIONS SECTION
-  // Future removePart(String pid) async {
-  //   String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
-  //   try {
-  //     await partCollection
-  //         .doc(pid).delete()
-  //         .then((value) => result = 'SUCCESS')
-  //         .catchError((error) => result = error.toString())
-  //         .timeout(_timeoutDuration, onTimeout: () => throw 'TIMEOUT');
-  //     return result;
-  //   } catch (e) {
-  //     return result;
-  //   }
-  // }
-  //
-  // Future<String> addPart(Part part, String action) async {
-  //   String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
-  //
-  //   try {
-  //     var doc = await partCollection.doc(part.partId.toString()).get()
-  //         .timeout(_timeoutDuration, onTimeout: () => throw 'TIMEOUT');
-  //     String docId = part.partId;
-  //
-  //     if(doc.exists && action == 'SAFE')
-  //       return 'EXIST';
-  //
-  //     int lastPartIndex = (await partCollection.orderBy('_sortingIndex').get()
-  //         .timeout(_timeoutDuration, onTimeout: () => throw 'TIMEOUT')).docs.last.get('_sortingIndex');
-  //
-  //     await partCollection
-  //         .doc(docId).set({...part.fields, '_sortingIndex': lastPartIndex + 1})
-  //         .then((value) => result = 'SUCCESS')
-  //         .catchError((error) => result = error.toString())
-  //         .timeout(_timeoutDuration, onTimeout: () => throw 'TIMEOUT');
-  //
-  //     return result;
-  //   } catch (e) {
-  //     return result;
-  //   }
-  // }
-  //
-  // Future<String> editPart(Part part) async {
-  //   String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
-  //   try {
-  //     await partCollection.doc(part.partId)
-  //         .update(part.fields)
-  //         .then((value) => result = 'SUCCESS')
-  //         .catchError((error) => result = error.toString())
-  //         .timeout(_timeoutDuration, onTimeout: () => throw 'TIMEOUT');
-  //     return result;
-  //   } catch (e) {
-  //     return result;
-  //   }
-  // }
-  //
-  // Future<GlobalGetPartResponse> getPart(String pid) async {
-  //   GlobalGetPartResponse result = GlobalGetPartResponse(null, 'Operation Timeout: Quota was probably reached. Try again the following day.');
-  //   try {
-  //     await partCollection.doc(pid).get()
-  //         .then((DocumentSnapshot snapshot) => result = GlobalGetPartResponse(_partFromSnapshot(snapshot), 'SUCCESS'))
-  //         .catchError((error) => GlobalGetPartResponse(null, 'FAILED'))
-  //         .timeout(_timeoutDuration, onTimeout: () => throw 'TIMEOUT');
-  //     return result;
-  //   }catch (e) {
-  //     return result;
-  //   }
-  // }
+  Future removeRequest(String rid) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+    try {
+      await requestCollection
+        .doc(rid).delete()
+        .then((value) => result = 'SUCCESS')
+        .catchError((error) => result = error.toString());
+      return result;
+    } catch (e) {
+      return result;
+    }
+  }
+
+  Future<String> addRequest(Request request) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+
+    try {
+      await requestCollection
+          .add(request.toMap())
+          .then((value) => result = 'SUCCESS')
+          .catchError((error) => result = error.toString());
+
+      return result;
+    } catch (e) {
+      return result;
+    }
+  }
+
+  Future<String> editRequest(Request request) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+    try {
+      await requestCollection.doc(request.rid)
+          .update(request.toMap())
+          .then((value) => result = 'SUCCESS')
+          .catchError((error) => result = error.toString());
+      return result;
+    } catch (e) {
+      return result;
+    }
+  }
+
+  Future<GetRequestResponse> getRequest(String rid) async {
+    GetRequestResponse result = GetRequestResponse(null, 'Operation Timeout: Quota was probably reached. Try again the following day.');
+    try {
+      await requestCollection.doc(rid).get()
+          .then((DocumentSnapshot snapshot) => result = GetRequestResponse(_requestFromSnapshot(snapshot), 'SUCCESS'))
+          .catchError((error) => GetRequestResponse(null, 'FAILED'));
+      return result;
+    }catch (e) {
+      return result;
+    }
+  }
 
   Future createAccount(AccountData person, String email, String uid) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
@@ -170,120 +167,26 @@ class DatabaseService {
     }
   }
 
-  // Future<String> editAccount(String fullName, String username, String uid) async {
-  //   String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
-  //   try {
-  //     await userCollection.doc(uid).update({
-  //       'fullName': fullName,
-  //       'username': username
-  //     })
-  //         .then((value) => result = 'SUCCESS')
-  //         .catchError((error) => result = error.toString())
-  //         .timeout(_timeoutDuration, onTimeout: () => throw 'TIMEOUT');
-  //     return result;
-  //   } catch (e) {
-  //     return result;
-  //   }
-  // }
-  //
-  // Future<String> promoteAccount(String uid, String accountType) async {
-  //   String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
-  //   try {
-  //     await userCollection.doc(uid).update({
-  //       'accountType': accountType,
-  //     })
-  //         .then((value) => result = 'SUCCESS')
-  //         .catchError((error) => result = error.toString())
-  //         .timeout(_timeoutDuration, onTimeout: () => throw 'TIMEOUT');
-  //     return result;
-  //   } catch(e) {
-  //     return result;
-  //   }
-  // }
-  //
-  // Future<String> verifyAccount(String uid, bool isVerified) async {
-  //   String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
-  //   try {
-  //     await userCollection.doc(uid).update({
-  //       'isVerified': isVerified
-  //     })
-  //         .then((value) => result = 'SUCCESS')
-  //         .catchError((error) => result = error.toString())
-  //         .timeout(_timeoutDuration, onTimeout: () => throw 'TIMEOUT');
-  //     return result;
-  //   } catch (e) {
-  //     return result;
-  //   }
-  // }
-  //
-  // Future<ImportResponse> importParts(List<Part> oldParts, List<Part> newParts, Map<String, String> headers, Function initializeTaskList, Function incrementLoading) async {
-  //   final auxBatch = FirebaseFirestore.instance.batch();
-  //   final fields = await fieldCollection.get();
-  //   final List<MapEntry<int, Part>> indexedParts = newParts.asMap().entries.toList();
-  //   final int chunkSize = 200;
-  //
-  //   final int partsLength = oldParts.length;
-  //   final int newPartsLength = indexedParts.length;
-  //   final int deleteOpChunkCount = (partsLength / chunkSize).ceil();
-  //   final int addOpChunkCount = (newPartsLength / chunkSize).ceil();
-  //
-  //   List<Part> duplicateParts = [];
-  //   List<Part> invalidParts = [];
-  //
-  //   initializeTaskList(
-  //       List.generate(deleteOpChunkCount, (index) => AppTask(heading: "Clearing Global", content: 'Clearing data chunk ${index+1} / $deleteOpChunkCount')) +
-  //           [AppTask(heading: 'Setting Data Structure', content: '')] +
-  //           List.generate(addOpChunkCount, (index) => AppTask(heading: "Populating Global", content: 'Adding data chunk ${index+1} / $addOpChunkCount')) +
-  //           [AppTask(heading: 'Import Complete', content: '')]
-  //   );
-  //
-  //   try {
-  //     if(partsLength != 0) {
-  //       for(int chunkIndex = 0; chunkIndex <= deleteOpChunkCount; chunkIndex++) {
-  //         final batch = FirebaseFirestore.instance.batch();
-  //         for(int partIndex = 0; partIndex < chunkSize && partIndex + chunkIndex * chunkSize < partsLength; partIndex++) {
-  //           batch.delete(partCollection.doc(oldParts[partIndex + chunkIndex * chunkSize].partId));
-  //         }
-  //         await batch.commit().then((value) => print('>>>>>>>>>>>>>>CHUNK $chunkIndex DELETED'))
-  //             .timeout(_timeoutDuration, onTimeout: () {
-  //           throw 'Operation Timeout: Quota was probably reached. Try again the following day.';
-  //         });
-  //         incrementLoading();
-  //       }
-  //     }
-  //
-  //     for(final field in fields.docs) {
-  //       auxBatch.delete(field.reference);
-  //     }
-  //     headers.keys.toList().asMap().forEach((index, field) {
-  //       auxBatch.set(fieldCollection.doc(field), {'index': index, 'fieldKey': field, 'fieldValue': headers[field]});
-  //     });
-  //     await auxBatch.commit().then((value) => print(">>>>>>>>>>>>>>AUX SUCCESS")).catchError((e) => print(e))
-  //         .timeout(_timeoutDuration, onTimeout: () {
-  //       throw 'Operation Timeout: Quota was probably reached. Try again the following day.';
-  //     });
-  //     incrementLoading();
-  //
-  //     for(int chunkIndex = 0; chunkIndex <= (newPartsLength / chunkSize).ceil(); chunkIndex++) {
-  //       final batch = FirebaseFirestore.instance.batch();
-  //       for(int partIndex = 0; partIndex < chunkSize && partIndex + chunkIndex * chunkSize < newPartsLength; partIndex++) {
-  //         batch.set(partCollection.doc(
-  //             indexedParts[partIndex + chunkIndex * chunkSize].value.partId),
-  //             {...indexedParts[partIndex + chunkIndex * chunkSize].value.toMap(),
-  //               '_sortingIndex': indexedParts[partIndex + chunkIndex * chunkSize].key});
-  //       }
-  //       await batch.commit().then((value) => print('>>>>>>>>>>>>>>CHUNK $chunkIndex ADDED'))
-  //           .timeout(_timeoutDuration, onTimeout: () {
-  //         throw 'Operation Timeout: Quota was probably reached. Try again the following day.';
-  //       });
-  //       incrementLoading();
-  //     }
-  //
-  //     return ImportResponse(result: 'SUCCESS', parts: duplicateParts, invalidIdParts: invalidParts);
-  //   } catch (e) {
-  //     return ImportResponse(result: e.toString(), parts: duplicateParts, invalidIdParts: invalidParts);
-  //   }
-  // }
+  Future<String> editAccount(AccountData account) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+    try {
+      await userCollection.doc(account.uid).update({
+        'fullName': account.fullName,
+        'username': account.username,
+        'address': account.address,
+        'contactNo': account.contactNo,
+        'latitude': account.latitude,
+        'longitude': account.longitude,
+        'isDonor': account.isDonor,
+        'bloodType': account.bloodType,
+      })
+          .then((value) => result = 'SUCCESS')
+          .catchError((error) => result = error.toString());
+      return result;
+    } catch (e) {
+      return result;
+    }
+  }
 
   // //STREAM SECTION
 
@@ -296,10 +199,10 @@ class DatabaseService {
   }
 
   Stream<List<Request>> get requests {
-    return partCollection.snapshots().map(_requestListFromSnapshot);
+    return requestCollection.snapshots().map(_requestListFromSnapshot);
   }
 
   Stream<List<History>> get history {
-    return fieldCollection.snapshots().map(_historyListFromSnapshot);
+    return historyCollection.snapshots().map(_historyListFromSnapshot);
   }
 }
