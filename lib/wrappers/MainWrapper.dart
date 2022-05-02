@@ -50,6 +50,9 @@ class _MainWrapperState extends State<MainWrapper> {
         return GestureDetector(
           onTap: () => FocusScope.of(context).requestFocus(FocusNode()),
           child: Scaffold(
+            appBar: AppBar(
+              title: Text('Blood Point'),
+            ),
             drawer: Drawer(
               backgroundColor: theme.primaryColorDark.withOpacity(0.60),
               child: ListView(

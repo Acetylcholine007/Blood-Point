@@ -16,13 +16,12 @@ class AccountData {
     this.uid,
     this.fullName,
     this.username,
-    this.accountType,
+    this.accountType = 'STANDARD',
     this.email,
     this.address,
     this.contactNo,
     this.latitude,
     this.longitude,
-    this.isVerified,
     this.isDonor,
     this.bloodType
   });
@@ -36,7 +35,6 @@ class AccountData {
     contactNo: this.contactNo,
     latitude: this.latitude,
     longitude: this.longitude,
-    isVerified: this.isVerified,
     isDonor: this.isDonor,
     bloodType: this.bloodType
   );

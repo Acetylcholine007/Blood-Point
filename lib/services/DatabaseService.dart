@@ -23,7 +23,12 @@ class DatabaseService {
         username: snapshot.get('username') ?? '',
         accountType: snapshot.get('accountType') ?? '',
         email: snapshot.get('email') ?? '',
-        isVerified: snapshot.get('isVerified') ?? ''
+        address: snapshot.get('address') ?? '',
+        contactNo: snapshot.get('contactNo') ?? '',
+        latitude: snapshot.get('latitude') ?? 0,
+        longitude: snapshot.get('longitude') ?? 0,
+        isDonor: snapshot.get('isDonor') ?? false,
+        bloodType: snapshot.get('bloodType') ?? 'O',
     );
   }
 
@@ -50,12 +55,18 @@ class DatabaseService {
   List<AccountData> _accountListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       return AccountData(
-          uid: doc.id,
-          fullName: doc.get('fullName') ?? '',
-          username: doc.get('username') ?? '',
-          accountType: doc.get('accountType') ?? '',
-          email: doc.get('email') ?? '',
-          isVerified: doc.get('isVerified') ?? ''
+        uid: doc.id,
+        fullName: doc.get('fullName') ?? '',
+        username: doc.get('username') ?? '',
+        accountType: doc.get('accountType') ?? '',
+        email: doc.get('email') ?? '',
+        address: doc.get('address') ?? '',
+        contactNo: doc.get('contactNo') ?? '',
+        latitude: doc.get('latitude') ?? 0,
+        longitude: doc.get('email') ?? 0,
+        isDonor: doc.get('isDonor') ?? false,
+        bloodType: doc.get('bloodType') ?? 'O',
+
       );
     }).toList();
   }
@@ -142,12 +153,17 @@ class DatabaseService {
       await userCollection.doc(uid).set({
         'fullName': person.fullName,
         'username': person.username,
-        'accountType': 'EMPLOYEE',
-        'isVerified': false,
+        'accountType': person.accountType,
+        'address': person.address,
+        'contactNo': person.contactNo,
+        'latitude': person.latitude,
+        'longitude': person.longitude,
+        'isDonor': person.isDonor,
+        'bloodType': person.bloodType,
         'email': email
       })
-          .then((value) => result = 'SUCCESS')
-          .catchError((error) => result = error.toString());
+        .then((value) => result = 'SUCCESS')
+        .catchError((error) => result = error.toString());
       return result;
     } catch (e) {
       return result;
