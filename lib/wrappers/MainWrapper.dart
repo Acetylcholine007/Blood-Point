@@ -58,6 +58,9 @@ class _MainWrapperState extends State<MainWrapper> {
           child: Scaffold(
             appBar: AppBar(
               title: Text('Blood Point'),
+              actions: [
+                IconButton(onPressed: () => {}, icon: Icon(Icons.notifications_rounded))
+              ],
             ),
             drawer: Drawer(
               backgroundColor: theme.primaryColorDark.withOpacity(0.60),

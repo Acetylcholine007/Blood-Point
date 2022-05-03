@@ -1,7 +1,13 @@
 class History {
-  final String hid;
+  String hid;
+  String heading;
+  String body;
+  DateTime datetime;
 
   History({
     this.hid,
+    this.heading,
+    this.body,
+    this.datetime
   });
 }

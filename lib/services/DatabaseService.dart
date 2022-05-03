@@ -72,7 +72,7 @@ class DatabaseService {
         address: doc.get('address') ?? '',
         contactNo: doc.get('contactNo') ?? '',
         latitude: doc.get('latitude') ?? 0,
-        longitude: doc.get('email') ?? 0,
+        longitude: doc.get('longitude') ?? 0,
         isDonor: doc.get('isDonor') ?? false,
         bloodType: doc.get('bloodType') ?? 'O',
 
@@ -93,6 +93,19 @@ class DatabaseService {
   }
 
   // OPERATOR FUNCTIONS SECTION
+  Future removeHistory(String hid) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+    try {
+      await historyCollection
+          .doc(hid).delete()
+          .then((value) => result = 'SUCCESS')
+          .catchError((error) => result = error.toString());
+      return result;
+    } catch (e) {
+      return result;
+    }
+  }
+
   Future removeRequest(String rid) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
@@ -114,7 +127,6 @@ class DatabaseService {
           .add(request.toMap())
           .then((value) => result = 'SUCCESS')
           .catchError((error) => result = error.toString());
-
       return result;
     } catch (e) {
       print(e);
@@ -126,7 +138,33 @@ class DatabaseService {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
       await requestCollection.doc(request.rid)
-          .update(request.toMap())
+        .update(request.toMap())
+        .then((value) => result = 'SUCCESS')
+        .catchError((error) => result = error.toString());
+      return result;
+    } catch (e) {
+      return result;
+    }
+  }
+
+  Future<String> terminateRequest(String rid) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+    try {
+      await requestCollection.doc(rid)
+          .update({'isComplete': true})
+          .then((value) => result = 'SUCCESS')
+          .catchError((error) => result = error.toString());
+      return result;
+    } catch (e) {
+      return result;
+    }
+  }
+
+  Future<String> updateDonor(String rid, List<String> donorIds) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+    try {
+      await requestCollection.doc(rid)
+          .update({'donorIds': donorIds})
           .then((value) => result = 'SUCCESS')
           .catchError((error) => result = error.toString());
       return result;
