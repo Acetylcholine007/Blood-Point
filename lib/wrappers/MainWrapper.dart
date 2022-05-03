@@ -3,8 +3,8 @@ import 'package:blood_point/models/Account.dart';
 import 'package:blood_point/models/AccountData.dart';
 import 'package:blood_point/screens/mainPages/DonorPage.dart';
 import 'package:blood_point/screens/mainPages/FeedPage.dart';
+import 'package:blood_point/screens/mainPages/HelpPage.dart';
 import 'package:blood_point/screens/mainPages/HistoryPage.dart';
-import 'package:blood_point/screens/mainPages/HomePage.dart';
 import 'package:blood_point/screens/mainPages/ProfilePage.dart';
 import 'package:blood_point/services/AuthService.dart';
 import 'package:flutter/material.dart';
@@ -27,9 +27,6 @@ class _MainWrapperState extends State<MainWrapper> {
   void initState() {
     pages = [
       Page(
-        HomePage()
-      ),
-      Page(
         FeedPage()
       ),
       Page(
@@ -40,6 +37,9 @@ class _MainWrapperState extends State<MainWrapper> {
       ),
       Page(
         ProfilePage()
+      ),
+      Page(
+        HelpPage()
       )
     ];
     super.initState();
@@ -97,8 +97,8 @@ class _MainWrapperState extends State<MainWrapper> {
                   ListTile(
                     selected: _currentIndex == 0,
                     iconColor: Colors.white,
-                    leading: Icon(Icons.home_rounded),
-                    title: Text('Home', style: TextStyle(color: Colors.white)),
+                    leading: Icon(Icons.dynamic_feed_rounded),
+                    title: Text('Feeds', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.of(context).pop();
                       setState(() => _currentIndex = 0);
@@ -107,8 +107,8 @@ class _MainWrapperState extends State<MainWrapper> {
                   ListTile(
                     selected: _currentIndex == 1,
                     iconColor: Colors.white,
-                    leading: Icon(Icons.dynamic_feed_rounded),
-                    title: Text('Feeds', style: TextStyle(color: Colors.white)),
+                    leading: Icon(Icons.people_rounded),
+                      title: Text('Donors', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.of(context).pop();
                       setState(() => _currentIndex = 1);
@@ -117,8 +117,8 @@ class _MainWrapperState extends State<MainWrapper> {
                   ListTile(
                     selected: _currentIndex == 2,
                     iconColor: Colors.white,
-                    leading: Icon(Icons.people_rounded),
-                      title: Text('Donors', style: TextStyle(color: Colors.white)),
+                    leading: Icon(Icons.history_rounded),
+                    title: Text('History', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.of(context).pop();
                       setState(() => _currentIndex = 2);
@@ -127,8 +127,8 @@ class _MainWrapperState extends State<MainWrapper> {
                   ListTile(
                     selected: _currentIndex == 3,
                     iconColor: Colors.white,
-                    leading: Icon(Icons.history_rounded),
-                    title: Text('History', style: TextStyle(color: Colors.white)),
+                    leading: Icon(Icons.account_circle_outlined),
+                    title: Text('Profile', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.of(context).pop();
                       setState(() => _currentIndex = 3);
@@ -137,8 +137,8 @@ class _MainWrapperState extends State<MainWrapper> {
                   ListTile(
                     selected: _currentIndex == 4,
                     iconColor: Colors.white,
-                    leading: Icon(Icons.account_circle_outlined),
-                    title: Text('Profile', style: TextStyle(color: Colors.white)),
+                    leading: Icon(Icons.help_outline_rounded),
+                    title: Text('Help', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.of(context).pop();
                       setState(() => _currentIndex = 4);

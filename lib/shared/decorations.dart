@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 InputDecoration formFieldDecoration = InputDecoration(
   isDense: true,
   border: OutlineInputBorder(
-    borderSide: BorderSide.none,
+    // borderSide: BorderSide.none,
     borderRadius: BorderRadius.circular(10),
   ),
   fillColor: Colors.white,
@@ -22,13 +22,11 @@ InputDecoration searchFieldDecoration = InputDecoration(
 InputDecoration dropdownDecoration = InputDecoration(
   contentPadding: EdgeInsets.all(10),
   filled: true,
-  isDense: true,
   border: OutlineInputBorder(
-    borderSide: BorderSide.none,
-    borderRadius: BorderRadius.circular(100),
+    // borderSide: BorderSide.none,
+    borderRadius: BorderRadius.circular(10),
   ),
-  // fillColor: Colors.white,
-  hintText: 'Search',
+  fillColor: Colors.white,
 );
 
 BoxDecoration labelFieldDecoration = BoxDecoration(
