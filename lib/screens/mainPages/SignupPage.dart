@@ -51,6 +51,19 @@ class _SignupPageState extends State<SignupPage> {
           loading = false;
         });
         Navigator.pop(context);
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Email Verification'),
+              content: Text('Verification Email was sent into your account. Please verify first before logging in.'),
+              actions: [
+                TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text('OK')
+                )
+              ],
+            )
+        );
       } else {
         setState(() {
           error = result;
@@ -159,8 +172,8 @@ class _SignupPageState extends State<SignupPage> {
                       child: Text('SIGN UP'),
                       onPressed: submitHandler
                     ),
-                    ElevatedButton(
-                      child: Text('LOGIN'),
+                    TextButton(
+                      child: Text('Already have account? Sign in'),
                       onPressed: () => Navigator.pop(context)
                     )
                   ],

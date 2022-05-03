@@ -41,6 +41,7 @@ class DatabaseService {
       bloodType: snapshot.get('bloodType') ?? '',
       isComplete: snapshot.get('isComplete') ?? false,
       donorIds: List<String>.from(snapshot.get('donorIds') as List) ?? [],
+      datetime: snapshot.get('datetime').toDate(),
     );
   }
   //
@@ -55,6 +56,7 @@ class DatabaseService {
         bloodType: doc.get('bloodType') ?? '',
         isComplete: doc.get('isComplete') ?? false,
         donorIds: List<String>.from(doc.get('donorIds') as List) ?? [],
+        datetime: doc.get('datetime').toDate(),
       );
     }).toList();
   }
@@ -115,6 +117,7 @@ class DatabaseService {
 
       return result;
     } catch (e) {
+      print(e);
       return result;
     }
   }

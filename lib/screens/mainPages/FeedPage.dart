@@ -36,7 +36,7 @@ class _FeedPageState extends State<FeedPage> {
                       return GestureDetector(
                         onTap: () => Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => RequestViewer(requests[index], account: snapshot.data)),
+                          MaterialPageRoute(builder: (context) => RequestViewer(requests[index], account: snapshot.data, myUid: account.uid)),
                         ),
                         child: RequestTile(requests[index], account: snapshot.data),
                       );

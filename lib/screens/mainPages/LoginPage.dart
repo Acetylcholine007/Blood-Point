@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     if(_formKey.currentState.validate()) {
       setState(() => loading = true);
       String result = await _auth.signInEmail(email, password);
-      if(result != 'SUCCESS') {
+      if (result != 'SUCCESS') {
         setState(() {
           error = result;
           loading = false;

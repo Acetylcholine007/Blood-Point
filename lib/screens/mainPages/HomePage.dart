@@ -9,10 +9,6 @@ class HomePage extends StatelessWidget {
       body: Container(
         child: Text('Home Page'),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => {},
-      ),
     );
   }
 }

@@ -41,7 +41,12 @@ class _RequestEditorState extends State<RequestEditor> {
     if(_formKey.currentState.validate()) {
       String result = '';
       if(widget.isNew) {
-        Request request = Request(uid: widget.uid, message: this.message, bloodType: this.bloodType);
+        Request request = Request(
+          uid: widget.uid,
+          message: this.message,
+          bloodType: this.bloodType,
+          datetime: DateTime.now()
+        );
         result = await DatabaseService.db.addRequest(request);
       } else {
         Request request = Request(
@@ -50,12 +55,16 @@ class _RequestEditorState extends State<RequestEditor> {
           message: this.message,
           bloodType: this.bloodType,
           donorIds: this.donorIds,
-          isComplete: this.isComplete
+          isComplete: this.isComplete,
+          datetime: widget.request.datetime
         );
         result = await DatabaseService.db.editRequest(request);
       }
 
       if(result == 'SUCCESS') {
+        if(!widget.isNew) {
+          Navigator.pop(context);
+        }
         Navigator.pop(context);
       } else {
         showDialog(
