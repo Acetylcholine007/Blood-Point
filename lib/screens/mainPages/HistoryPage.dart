@@ -1,6 +1,7 @@
 import 'package:blood_point/components/Loading.dart';
 import 'package:blood_point/components/NoData.dart';
 import 'package:blood_point/models/History.dart';
+import 'package:blood_point/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +16,30 @@ class HistoryPage extends StatefulWidget {
 
 class _HistoryPageState extends State<HistoryPage> {
 
+  CircleAvatar iconSelector(String heading) {
+    if(heading.startsWith('Account')) {
+      return CircleAvatar(
+        backgroundColor: Colors.red,
+        child: Icon(Icons.account_circle_outlined),
+      );
+    } else if(heading.startsWith('Request')) {
+      return CircleAvatar(
+        backgroundColor: Colors.deepOrangeAccent,
+        child: Icon(Icons.assignment_rounded),
+      );
+    } else if(heading.startsWith('Don')) {
+      return CircleAvatar(
+        backgroundColor: Colors.purpleAccent,
+        child: Icon(Icons.handshake_rounded),
+      );
+    } else {
+      return CircleAvatar(
+        backgroundColor: Colors.limeAccent,
+        child: Icon(Icons.category_rounded),
+      );
+    }
+  }
+
   void deleteHandler(String hid) async {
     showDialog(context: context, builder: (BuildContext context) {
       return AlertDialog(
@@ -23,7 +48,7 @@ class _HistoryPageState extends State<HistoryPage> {
         actions: [
           TextButton(onPressed: () async {
             Navigator.of(context).pop();
-            String result = await DatabaseService.db.removeHistory(hid);
+            String result = await DatabaseService.db.deleteHistory(hid);
             if(result == 'SUCCESS') {
               Navigator.pop(context);
             } else {
@@ -82,8 +107,9 @@ class _HistoryPageState extends State<HistoryPage> {
                 )
               ),
             child: ListTile(
+              leading: iconSelector(history[index].heading),
               title: Text(history[index].heading),
-              subtitle: Text(history[index].datetime.toString()),
+              subtitle: Text(datetimeFormatter.format(history[index].datetime)),
             ),
           );
         },

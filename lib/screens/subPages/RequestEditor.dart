@@ -47,7 +47,7 @@ class _RequestEditorState extends State<RequestEditor> {
           bloodType: this.bloodType,
           datetime: DateTime.now()
         );
-        result = await DatabaseService.db.addRequest(request);
+        result = await DatabaseService.db.addRequest(request, widget.uid);
       } else {
         Request request = Request(
           uid: widget.uid,
@@ -58,7 +58,7 @@ class _RequestEditorState extends State<RequestEditor> {
           isComplete: this.isComplete,
           datetime: widget.request.datetime
         );
-        result = await DatabaseService.db.editRequest(request);
+        result = await DatabaseService.db.editRequest(request, widget.uid);
       }
 
       if(result == 'SUCCESS') {

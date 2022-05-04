@@ -38,7 +38,7 @@ class _RequestViewerState extends State<RequestViewer> {
     } else {
       donorIds.remove(widget.myUid);
     }
-    String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds);
+    String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid);
     if(result == 'SUCCESS') {
       setState(() => request.donorIds = donorIds);
     } else {
@@ -62,7 +62,7 @@ class _RequestViewerState extends State<RequestViewer> {
 
   void terminateHandler() async {
 
-    String result = await DatabaseService.db.terminateRequest(request.rid);
+    String result = await DatabaseService.db.terminateRequest(request.rid, widget.myUid);
     if(result == 'SUCCESS') {
       Navigator.pop(context);
     } else {
@@ -70,6 +70,37 @@ class _RequestViewerState extends State<RequestViewer> {
           context: context,
           builder: (context) => AlertDialog(
             title: Text('Terminate Request'),
+            content: Text(result),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text('OK')
+              )
+            ],
+          )
+      );
+    }
+  }
+
+  void setDonorHandler(String donorUid) async {
+    String finalDonor = request.finalDonor;
+    if(donorUid == finalDonor) {
+      finalDonor = "";
+    } else {
+      finalDonor = donorUid;
+    }
+    String result = await DatabaseService.db.setFinalDonor(request.rid, finalDonor, widget.myUid);
+    if(result == 'SUCCESS') {
+      setState(() {
+        request.finalDonor = finalDonor;
+      });
+    } else {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Set Final Donor'),
             content: Text(result),
             actions: [
               TextButton(
@@ -92,7 +123,7 @@ class _RequestViewerState extends State<RequestViewer> {
         actions: [
           TextButton(onPressed: () async {
             Navigator.of(context).pop();
-            String result = await DatabaseService.db.removeRequest(request.rid);
+            String result = await DatabaseService.db.removeRequest(request.rid, widget.myUid);
             if(result == 'SUCCESS') {
               Navigator.pop(context);
             } else {
@@ -188,18 +219,22 @@ class _RequestViewerState extends State<RequestViewer> {
                               ),
                               child: ListTile(
                                 leading: CircleAvatar(
-                                  child: Text('${index + 1}', style: theme.textTheme.headline6),
-                                  backgroundColor: theme.primaryColorLight,
+                                  child: Text('${index + 1}', style: theme.textTheme.headline6.copyWith(color: Colors.white)),
+                                  backgroundColor: theme.primaryColor,
                                 ),
                                 title: Text(snapshot.data.fullName),
                                 subtitle: Text(snapshot.data.email),
+                                trailing: request.uid == widget.myUid ? IconButton(
+                                  onPressed: () => setDonorHandler(snapshot.data.uid),
+                                  icon: snapshot.data.uid == request.finalDonor ? Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank_rounded),
+                                ) : null,
                               ),
                             );
                           } else {
                             return ListTile(
                               leading: CircleAvatar(
-                                child: Text('${index + 1}', style: theme.textTheme.headline6),
-                                backgroundColor: theme.primaryColorLight,
+                                child: Text('${index + 1}', style: theme.textTheme.headline6.copyWith(color: Colors.white)),
+                                backgroundColor: theme.primaryColor,
                               ),
                               title: LinearProgressIndicator(),
                               subtitle: LinearProgressIndicator(),

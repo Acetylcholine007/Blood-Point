@@ -23,36 +23,108 @@ class _FeedPageState extends State<FeedPage> {
     final theme = Theme.of(context);
     AccountData account = Provider.of<AccountData>(context);
     List<Request> requests = Provider.of<List<Request>>(context);
+    List<Request> myRequest = requests != null ? requests.where((item) => item.uid == account.uid).toList() : [];
+    List<Request> myDonations = requests != null ? requests.where((item) => item.finalDonor == account.uid).toList() : [];
 
-    return Scaffold(
-      body: requests != null ? requests.isEmpty ? NoData('No Requests') : Container(
-        child: ListView.builder(
-            itemCount: requests.length,
-            itemBuilder: (BuildContext context, int index) {
-              return FutureBuilder<AccountData>(
-                  future: DatabaseService.db.getAccount(requests[index].uid),
-                  builder: (context, snapshot) {
-                    if(snapshot.connectionState == ConnectionState.done) {
-                      return GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => RequestViewer(requests[index], account: snapshot.data, myUid: account.uid)),
-                        ),
-                        child: RequestTile(requests[index], account: snapshot.data),
-                      );
-                    } else {
-                      return RequestTile(requests[index]);
-                    }
-                  }
-              );
-            }
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize:
+          Size.fromHeight(MediaQuery.of(context).size.height),
+          child: const SizedBox(
+            height: 50.0,
+            child: TabBar(
+              labelColor: Colors.black,
+              tabs: [
+                Tab(
+                  text: "All Requests",
+                ),
+                Tab(
+                  text: "My Requests",
+                ),
+                Tab(
+                  text: "My Donations",
+                ),
+              ],
+            ),
+          ),
         ),
-      ) : Loading('Loading Requests'),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () => Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => RequestEditor(isNew: true, uid: account.uid)),
+        body: requests != null ? Container(
+          child: TabBarView(
+            children: [
+              requests.isEmpty ? NoData('No Requests') : ListView.builder(
+                  itemCount: requests.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return FutureBuilder<AccountData>(
+                        future: DatabaseService.db.getAccount(requests[index].uid),
+                        builder: (context, snapshot) {
+                          if(snapshot.connectionState == ConnectionState.done) {
+                            return GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => RequestViewer(requests[index], account: snapshot.data, myUid: account.uid)),
+                              ),
+                              child: RequestTile(requests[index], account: snapshot.data),
+                            );
+                          } else {
+                            return RequestTile(requests[index]);
+                          }
+                        }
+                    );
+                  }
+              ),
+              myRequest.isEmpty ? NoData('No Requests') : ListView.builder(
+                  itemCount: myRequest.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return FutureBuilder<AccountData>(
+                        future: DatabaseService.db.getAccount(myRequest[index].uid),
+                        builder: (context, snapshot) {
+                          if(snapshot.connectionState == ConnectionState.done) {
+                            return GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => RequestViewer(myRequest[index], account: snapshot.data, myUid: account.uid)),
+                              ),
+                              child: RequestTile(myRequest[index], account: snapshot.data),
+                            );
+                          } else {
+                            return RequestTile(myRequest[index]);
+                          }
+                        }
+                    );
+                  }
+              ),
+              myDonations.isEmpty ? NoData('No Donations') : ListView.builder(
+                  itemCount: myDonations.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return FutureBuilder<AccountData>(
+                        future: DatabaseService.db.getAccount(myDonations[index].uid),
+                        builder: (context, snapshot) {
+                          if(snapshot.connectionState == ConnectionState.done) {
+                            return GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => RequestViewer(myDonations[index], account: snapshot.data, myUid: account.uid)),
+                              ),
+                              child: RequestTile(myDonations[index], account: snapshot.data),
+                            );
+                          } else {
+                            return RequestTile(myDonations[index]);
+                          }
+                        }
+                    );
+                  }
+              )
+            ],
+          ),
+        ) : Loading('Loading Requests'),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => RequestEditor(isNew: true, uid: account.uid)),
+          ),
         ),
       ),
     );

@@ -4,6 +4,8 @@ import 'package:blood_point/models/AccountData.dart';
 import 'package:blood_point/models/Account.dart';
 import 'package:blood_point/services/DatabaseService.dart';
 
+import '../models/History.dart';
+
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
@@ -60,12 +62,17 @@ class AuthService {
     return result;
   }
 
-  Future<String> changePassword(String newPassword) async {
+  Future<String> changePassword(String newPassword, String uid) async {
     String result  = '';
-    await _auth.currentUser.updatePassword(newPassword)
-        .then((value) => result = 'SUCCESS')
-        .catchError((error) => result = error.toString());
-    return result;
+    try {
+      await _auth.currentUser.updatePassword(newPassword);
+      await DatabaseService.db.addHistory(History(uid: uid, heading: 'Change Password', body: 'You\'ve changed your password'));
+      result = 'SUCCESS';
+      return result;
+    } catch (e) {
+      result = e.toString();
+      return result;
+    }
   }
 
   Future<String> resendVerification(User user) async {

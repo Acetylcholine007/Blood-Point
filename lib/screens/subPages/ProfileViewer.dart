@@ -59,7 +59,15 @@ class ProfileViewer extends StatelessWidget {
             ),
             ListTile(
               leading: CircleAvatar(
-                child: Text(account.bloodType, style: theme.textTheme.headline6.copyWith(color: Colors.white)),
+                child: Icon(Icons.cake_rounded, color: Colors.white),
+                backgroundColor: theme.primaryColor,
+              ),
+              title: Text('Age'),
+              subtitle: Text('${account.age} years old'),
+            ),
+            ListTile(
+              leading: CircleAvatar(
+                child: Icon(Icons.bloodtype_rounded, color: Colors.white),
                 backgroundColor: theme.primaryColor,
               ),
               title: Text('Blood Type'),

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class Request {
   String rid;
   String uid;
+  String finalDonor;
   String message;
   String bloodType;
   bool isComplete;
@@ -12,6 +13,7 @@ class Request {
   Request({
     this.rid,
     this.uid,
+    this.finalDonor = "",
     this.message,
     this.bloodType,
     this.donorIds = const [],
@@ -20,9 +22,9 @@ class Request {
   });
 
   Map<String, dynamic> toMap() {
-    print(this.datetime);
     return {
       'uid': this.uid,
+      'finalDonor': this.finalDonor,
       'message': this.message,
       'bloodType': this.bloodType,
       'isComplete': this.isComplete,

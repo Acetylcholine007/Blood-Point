@@ -7,6 +7,8 @@ import 'package:blood_point/models/Request.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../models/AppNotification.dart';
+
 class DatabaseService {
   DatabaseService._();
 
@@ -15,21 +17,24 @@ class DatabaseService {
   final CollectionReference userCollection = FirebaseFirestore.instance.collection('users');
   final CollectionReference historyCollection = FirebaseFirestore.instance.collection('history');
   final CollectionReference requestCollection = FirebaseFirestore.instance.collection('requests');
+  final CollectionReference notificationCollection = FirebaseFirestore.instance.collection('notifications');
 
   //MAPPING FUNCTION SECTION
   AccountData _accountFromSnapshot(DocumentSnapshot snapshot) {
     return AccountData(
-        uid: snapshot.id,
-        fullName: snapshot.get('fullName') ?? '',
-        username: snapshot.get('username') ?? '',
-        accountType: snapshot.get('accountType') ?? '',
-        email: snapshot.get('email') ?? '',
-        address: snapshot.get('address') ?? '',
-        contactNo: snapshot.get('contactNo') ?? '',
-        latitude: snapshot.get('latitude') ?? 0,
-        longitude: snapshot.get('longitude') ?? 0,
-        isDonor: snapshot.get('isDonor') ?? false,
-        bloodType: snapshot.get('bloodType') ?? 'O',
+      uid: snapshot.id,
+      fullName: snapshot.get('fullName') ?? '',
+      username: snapshot.get('username') ?? '',
+      accountType: snapshot.get('accountType') ?? '',
+      email: snapshot.get('email') ?? '',
+      address: snapshot.get('address') ?? '',
+      contactNo: snapshot.get('contactNo') ?? '',
+      latitude: snapshot.get('latitude') ?? 0,
+      longitude: snapshot.get('longitude') ?? 0,
+      isDonor: snapshot.get('isDonor') ?? false,
+      bloodType: snapshot.get('bloodType') ?? 'O',
+      hasNewNotif: snapshot.get('isDonor') ?? false,
+      birthday: snapshot.get('birthday').toDate(),
     );
   }
 
@@ -37,6 +42,7 @@ class DatabaseService {
     return Request(
       rid: snapshot.id,
       uid: snapshot.get('uid') ?? '',
+      finalDonor: snapshot.get('finalDonor') ?? '',
       message: snapshot.get('message') ?? '',
       bloodType: snapshot.get('bloodType') ?? '',
       isComplete: snapshot.get('isComplete') ?? false,
@@ -52,6 +58,7 @@ class DatabaseService {
       return Request(
         rid: doc.id,
         uid: doc.get('uid') ?? '',
+        finalDonor: doc.get('finalDonor') ?? '',
         message: doc.get('message') ?? '',
         bloodType: doc.get('bloodType') ?? '',
         isComplete: doc.get('isComplete') ?? false,
@@ -75,6 +82,8 @@ class DatabaseService {
         longitude: doc.get('longitude') ?? 0,
         isDonor: doc.get('isDonor') ?? false,
         bloodType: doc.get('bloodType') ?? 'O',
+        hasNewNotif: doc.get('isDonor') ?? false,
+        birthday: doc.get('birthday').toDate(),
 
       );
     }).toList();
@@ -83,7 +92,21 @@ class DatabaseService {
   List<History> _historyListFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       return History(
-          hid: doc.id
+        hid: doc.id,
+        heading: doc.get('heading') ?? '',
+        body: doc.get('body') ?? '',
+        datetime: doc.get('datetime').toDate(),
+      );
+    }).toList();
+  }
+
+  List<AppNotification> _notificationListFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      return AppNotification(
+        nid: doc.id,
+        heading: doc.get('heading') ?? '',
+        body: doc.get('body') ?? '',
+        datetime: doc.get('datetime').toDate(),
       );
     }).toList();
   }
@@ -93,8 +116,76 @@ class DatabaseService {
   }
 
   // OPERATOR FUNCTIONS SECTION
-  Future removeHistory(String hid) async {
+  Future removeRequest(String rid, String uid) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+    try {
+      await requestCollection.doc(rid).delete();
+      await addHistory(History(uid: uid, heading: 'Request Removal', body: 'You\ve removed your blood request with rid=$rid'));
+      result = 'SUCCESS';
+      return result;
+    } catch (e) {
+      result = e.toString();
+      return result;
+    }
+  }
+
+  Future<String> addRequest(Request request, String uid) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+
+    try {
+      await requestCollection.add(request.toMap());
+      await addHistory(History(uid: uid, heading: 'Request Creation', body: 'You\'ve created a blood request with blood type of ${request.bloodType}'));
+      result = 'SUCCESS';
+      return result;
+    } catch (e) {
+      result = e.toString();
+      return result;
+    }
+  }
+
+  Future<String> editRequest(Request request, String uid) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+    try {
+      await requestCollection.doc(request.rid).update(request.toMap());
+      await addHistory(History(uid: uid, heading: 'Request Editing', body: 'You\'ve edited your blood request with rid=${request.rid}'));
+      result = 'SUCCESS';
+      return result;
+    } catch (e) {
+      result = e.toString();
+      return result;
+    }
+  }
+
+  Future<String> terminateRequest(String rid, String uid) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+    try {
+      await requestCollection.doc(rid).update({'isComplete': true});
+      await addHistory(History(uid: uid, heading: 'Request Termination', body: 'You\'ve terminated your blood request with rid=${rid}'));
+      result = 'SUCCESS';
+      return result;
+    } catch (e) {
+      result = e.toString();
+      return result;
+    }
+  }
+
+  Future<String> addHistory(History history) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+
+    try {
+      await historyCollection
+        .add(history.toMap())
+        .then((value) => result = 'SUCCESS')
+        .catchError((error) => result = error.toString());
+      return result;
+    } catch (e) {
+      return result;
+    }
+  }
+
+  Future<String> deleteHistory(String hid) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+
     try {
       await historyCollection
           .doc(hid).delete()
@@ -106,11 +197,12 @@ class DatabaseService {
     }
   }
 
-  Future removeRequest(String rid) async {
+  Future<String> addNotification(AppNotification notification) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+
     try {
-      await requestCollection
-        .doc(rid).delete()
+      await notificationCollection
+        .add(notification.toMap())
         .then((value) => result = 'SUCCESS')
         .catchError((error) => result = error.toString());
       return result;
@@ -119,26 +211,12 @@ class DatabaseService {
     }
   }
 
-  Future<String> addRequest(Request request) async {
+  Future<String> deleteNotification(String nid) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
 
     try {
-      await requestCollection
-          .add(request.toMap())
-          .then((value) => result = 'SUCCESS')
-          .catchError((error) => result = error.toString());
-      return result;
-    } catch (e) {
-      print(e);
-      return result;
-    }
-  }
-
-  Future<String> editRequest(Request request) async {
-    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
-    try {
-      await requestCollection.doc(request.rid)
-        .update(request.toMap())
+      await notificationCollection
+        .doc(nid).delete()
         .then((value) => result = 'SUCCESS')
         .catchError((error) => result = error.toString());
       return result;
@@ -147,28 +225,32 @@ class DatabaseService {
     }
   }
 
-  Future<String> terminateRequest(String rid) async {
+  Future<String> updateDonor(String rid, List<String> donorIds, String uid) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
-      await requestCollection.doc(rid)
-          .update({'isComplete': true})
-          .then((value) => result = 'SUCCESS')
-          .catchError((error) => result = error.toString());
+      await requestCollection.doc(rid).update({'donorIds': donorIds});
+      if(donorIds.contains(uid)) {
+        await addHistory(History(uid: uid, heading: 'Donation Offer', body: 'You\'ve offer your blood donation to a request with rid=$rid'));
+      } else {
+        await addHistory(History(uid: uid, heading: 'Donation Retraction', body: 'You\'ve pulled out your blood donation offer to a request with rid=$rid'));
+      }
+      result = 'SUCCESS';
       return result;
     } catch (e) {
+      result = e.toString();
       return result;
     }
   }
 
-  Future<String> updateDonor(String rid, List<String> donorIds) async {
+  Future<String> setFinalDonor(String rid, String finalDonor, String uid) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
-      await requestCollection.doc(rid)
-          .update({'donorIds': donorIds})
-          .then((value) => result = 'SUCCESS')
-          .catchError((error) => result = error.toString());
+      await requestCollection.doc(rid).update({'finalDonor': finalDonor});
+      await addHistory(History(uid: uid, heading: 'Donor Selection', body: 'You\'ve choosen a user with uid=${rid} as the blood donor'));
+      result = 'SUCCESS';
       return result;
     } catch (e) {
+      result = e.toString();
       return result;
     }
   }
@@ -185,25 +267,15 @@ class DatabaseService {
     }
   }
 
-  Future createAccount(AccountData person, String email, String uid) async {
+  Future createAccount(AccountData account, String email, String uid) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
-      await userCollection.doc(uid).set({
-        'fullName': person.fullName,
-        'username': person.username,
-        'accountType': person.accountType,
-        'address': person.address,
-        'contactNo': person.contactNo,
-        'latitude': person.latitude,
-        'longitude': person.longitude,
-        'isDonor': person.isDonor,
-        'bloodType': person.bloodType,
-        'email': email
-      })
-        .then((value) => result = 'SUCCESS')
-        .catchError((error) => result = error.toString());
+      await userCollection.doc(uid).set(account.toMap());
+      await addHistory(History(uid: uid, heading: 'Account Creation', body: 'You\'ve created your account at ${DateTime.now().toString()}'));
+      result = 'SUCCESS';
       return result;
     } catch (e) {
+      result = e.toString();
       return result;
     }
   }
@@ -211,20 +283,12 @@ class DatabaseService {
   Future<String> editAccount(AccountData account) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
-      await userCollection.doc(account.uid).update({
-        'fullName': account.fullName,
-        'username': account.username,
-        'address': account.address,
-        'contactNo': account.contactNo,
-        'latitude': account.latitude,
-        'longitude': account.longitude,
-        'isDonor': account.isDonor,
-        'bloodType': account.bloodType,
-      })
-          .then((value) => result = 'SUCCESS')
-          .catchError((error) => result = error.toString());
+      await userCollection.doc(account.uid).update(account.toMap());
+      await addHistory(History(uid: account.uid, heading: 'Account Editing', body: 'You\'ve edited your account information'));
+      result = 'SUCCESS';
       return result;
     } catch (e) {
+      result = e.toString();
       return result;
     }
   }
@@ -240,10 +304,14 @@ class DatabaseService {
   }
 
   Stream<List<Request>> get requests {
-    return requestCollection.snapshots().map(_requestListFromSnapshot);
+    return requestCollection.orderBy("datetime", descending: true).snapshots().map(_requestListFromSnapshot);
   }
 
-  Stream<List<History>> get history {
-    return historyCollection.snapshots().map(_historyListFromSnapshot);
+  Stream<List<History>> getHistory(String uid) {
+    return historyCollection.where("uid", isEqualTo: uid).orderBy("datetime", descending: true).snapshots().map(_historyListFromSnapshot);
+  }
+
+  Stream<List<AppNotification>> getNotifications(String uid) {
+    return notificationCollection.where("uid", isEqualTo: uid).orderBy("datetime", descending: true).snapshots().map(_notificationListFromSnapshot);
   }
 }

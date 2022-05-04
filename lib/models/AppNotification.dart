@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class History {
-  String hid;
+class AppNotification {
+  String nid;
   String uid;
   String heading;
   String body;
   DateTime datetime;
 
-  History({
-    this.hid,
+  AppNotification({
+    this.nid,
     this.uid,
     this.heading,
     this.body,

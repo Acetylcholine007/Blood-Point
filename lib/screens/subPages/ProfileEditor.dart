@@ -2,6 +2,7 @@ import 'package:blood_point/services/DatabaseService.dart';
 import 'package:flutter/material.dart';
 
 import '../../models/AccountData.dart';
+import '../../shared/constants.dart';
 import '../../shared/decorations.dart';
 
 class ProfileEditor extends StatefulWidget {
@@ -110,7 +111,7 @@ class _ProfileEditorState extends State<ProfileEditor> {
               DropdownButtonFormField(
                 value: account.bloodType,
                 decoration: dropdownDecoration,
-                items: ['A', 'B', 'AB', 'O'].asMap().entries.map((filter) => DropdownMenuItem(
+                items: bloodTypes.asMap().entries.map((filter) => DropdownMenuItem(
                   value: filter.value,
                   child: Text(filter.value, overflow: TextOverflow.ellipsis),
                 )).toList(),

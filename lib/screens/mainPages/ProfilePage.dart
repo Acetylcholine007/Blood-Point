@@ -43,7 +43,7 @@ class _ProfilePageState extends State<ProfilePage> {
           body: TabBarView(
             children: [
               ProfileEditor(account),
-              PasswordEditor()
+              PasswordEditor(account.uid)
             ],
           ),
         ),

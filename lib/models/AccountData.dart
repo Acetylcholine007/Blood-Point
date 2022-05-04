@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class AccountData {
   String uid;
   String fullName;
@@ -10,7 +12,9 @@ class AccountData {
   double longitude;
   bool isVerified;
   bool isDonor;
+  bool hasNewNotif;
   String bloodType;
+  DateTime birthday;
 
   AccountData({
     this.uid,
@@ -23,8 +27,27 @@ class AccountData {
     this.latitude,
     this.longitude,
     this.isDonor,
-    this.bloodType
+    this.bloodType,
+    this.hasNewNotif,
+    this.birthday
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'fullName': this.fullName,
+      'username': this.username,
+      'accountType': this.accountType,
+      'address': this.address,
+      'contactNo': this.contactNo,
+      'latitude': this.latitude,
+      'longitude': this.longitude,
+      'isDonor': this.isDonor,
+      'bloodType': this.bloodType,
+      'hasNewNotif': this.hasNewNotif,
+      'birthday': Timestamp.fromDate(this.birthday),
+      'email': this.email
+    };
+  }
 
   AccountData copy() => AccountData(
     uid: this.uid,
@@ -36,6 +59,25 @@ class AccountData {
     latitude: this.latitude,
     longitude: this.longitude,
     isDonor: this.isDonor,
-    bloodType: this.bloodType
+    bloodType: this.bloodType,
+    hasNewNotif: this.hasNewNotif,
+    birthday: this.birthday
   );
+
+  get age {
+    DateTime currentDate = DateTime.now();
+    int age = currentDate.year - birthday.year;
+    int month1 = currentDate.month;
+    int month2 = birthday.month;
+    if (month2 > month1) {
+      age--;
+    } else if (month1 == month2) {
+      int day1 = currentDate.day;
+      int day2 = birthday.day;
+      if (day2 > day1) {
+        age--;
+      }
+    }
+    return age;
+  }
 }

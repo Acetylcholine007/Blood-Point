@@ -4,7 +4,8 @@ import '../../services/AuthService.dart';
 import '../../shared/decorations.dart';
 
 class PasswordEditor extends StatefulWidget {
-  const PasswordEditor({Key key}) : super(key: key);
+  final String uid;
+  const PasswordEditor(this.uid, {Key key}) : super(key: key);
 
   @override
   _PasswordEditorState createState() => _PasswordEditorState();
@@ -23,7 +24,7 @@ class _PasswordEditorState extends State<PasswordEditor> {
   void submitHandler() async {
     if(_formKey.currentState.validate() && confirmPassword == password) {
       setState(() => loading = true);
-      String result = await _auth.changePassword(password);
+      String result = await _auth.changePassword(password, widget.uid);
       if(result == 'SUCCESS') {
         setState(() {
           loading = false;
