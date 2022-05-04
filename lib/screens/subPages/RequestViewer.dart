@@ -38,7 +38,7 @@ class _RequestViewerState extends State<RequestViewer> {
     } else {
       donorIds.remove(widget.myUid);
     }
-    String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid);
+    String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid, widget.request.uid);
     if(result == 'SUCCESS') {
       setState(() => request.donorIds = donorIds);
     } else {
@@ -85,13 +85,14 @@ class _RequestViewerState extends State<RequestViewer> {
   }
 
   void setDonorHandler(String donorUid) async {
+    String oldDonor = request.finalDonor;
     String finalDonor = request.finalDonor;
     if(donorUid == finalDonor) {
       finalDonor = "";
     } else {
       finalDonor = donorUid;
     }
-    String result = await DatabaseService.db.setFinalDonor(request.rid, finalDonor, widget.myUid);
+    String result = await DatabaseService.db.setFinalDonor(request.rid, finalDonor, widget.myUid, oldDonor);
     if(result == 'SUCCESS') {
       setState(() {
         request.finalDonor = finalDonor;

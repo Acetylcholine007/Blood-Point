@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:blood_point/components/Loading.dart';
 import 'package:blood_point/components/NoData.dart';
 import 'package:blood_point/models/Account.dart';
@@ -9,6 +10,8 @@ import 'package:blood_point/screens/mainPages/HelpPage.dart';
 import 'package:blood_point/screens/mainPages/HistoryPage.dart';
 import 'package:blood_point/screens/mainPages/ProfilePage.dart';
 import 'package:blood_point/services/AuthService.dart';
+import 'package:blood_point/services/DatabaseService.dart';
+import 'package:blood_point/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -48,6 +51,29 @@ class _MainWrapperState extends State<MainWrapper> {
     super.initState();
   }
 
+  void deleteHandler(String nid) async {
+    String result = await DatabaseService.db.deleteNotification(nid);
+    if(result == 'SUCCESS') {
+      Navigator.pop(context);
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Remove Notification'),
+          content: Text(result),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text('OK')
+            )
+          ],
+        )
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -64,13 +90,24 @@ class _MainWrapperState extends State<MainWrapper> {
             appBar: AppBar(
               title: Text('Blood Point'),
               actions: [
-                IconButton(onPressed: () => _key.currentState.openEndDrawer(), icon: Icon(Icons.notifications_rounded))
+                account != null ? IconButton(onPressed: () {
+                  if(account.newNotifs > 0) {
+                    DatabaseService.db.seenNotification(account.uid);
+                  }
+                  _key.currentState.openEndDrawer();
+                }, icon: Badge(
+                    badgeColor: Colors.amberAccent,
+                    badgeContent: Text(account.newNotifs.toString(), style: TextStyle(color: Colors.black)),
+                    showBadge: account.newNotifs > 0,
+                    position: BadgePosition.topEnd(),
+                    child: Icon(Icons.notifications_rounded)
+                )) : null
               ],
             ),
             endDrawer: Drawer(
               backgroundColor: Colors.white,
-              child: ListView(
-                children: <Widget>[
+              child: Column(
+                children: [
                   DrawerHeader(
                     decoration: BoxDecoration(
                       color: theme.primaryColorDark,
@@ -90,18 +127,49 @@ class _MainWrapperState extends State<MainWrapper> {
                         ListTile(
                           contentPadding: EdgeInsets.all(0),
                           textColor: Colors.white,
-                          title: Text(notifications.isEmpty ? 'No Notifications' : '${notifications.length} notifications'),
+                          title: Text(notifications.isEmpty ? 'No Notifications' : '${notifications.length} ${notifications.length > 1 ? 'Notifications' : 'Notification'}'),
                         )
                       ],
                     ),
                   ),
-                ] + (notifications.isEmpty ? [] :
-                notifications.map((AppNotification notif) => ListTile(
-                  title: Text(notif.heading),
-                  subtitle: Text(notif.datetime.toString()),
-                )).toList()
-                ),
-              ),
+                  Expanded(
+                    child: ListView.separated(
+                      padding: EdgeInsets.all(0),
+                      itemCount: notifications.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return GestureDetector(
+                          onTap: () => showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text(notifications[index].heading),
+                              content: Text(notifications[index].body),
+                              actions: [
+                                TextButton(
+                                    onPressed: () => deleteHandler(notifications[index].nid),
+                                    child: Text('DELETE')
+                                ),
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('CLOSE')
+                                )
+                              ],
+                            )
+                          ),
+                          child: ListTile(
+                            title: Text(notifications[index].heading),
+                            subtitle: Text(datetimeFormatter.format(notifications[index].datetime)),
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) {
+                        return Divider();
+                      },
+                    ),
+                  )
+                ],
+              )
             ),
             drawer: Drawer(
               backgroundColor: theme.primaryColorDark.withOpacity(0.60),

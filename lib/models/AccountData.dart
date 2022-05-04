@@ -12,7 +12,7 @@ class AccountData {
   double longitude;
   bool isVerified;
   bool isDonor;
-  bool hasNewNotif;
+  int newNotifs;
   String bloodType;
   DateTime birthday;
 
@@ -28,7 +28,7 @@ class AccountData {
     this.longitude,
     this.isDonor,
     this.bloodType,
-    this.hasNewNotif,
+    this.newNotifs,
     this.birthday
   });
 
@@ -43,7 +43,7 @@ class AccountData {
       'longitude': this.longitude,
       'isDonor': this.isDonor,
       'bloodType': this.bloodType,
-      'hasNewNotif': this.hasNewNotif,
+      'newNotifs': this.newNotifs,
       'birthday': Timestamp.fromDate(this.birthday),
       'email': this.email
     };
@@ -60,7 +60,7 @@ class AccountData {
     longitude: this.longitude,
     isDonor: this.isDonor,
     bloodType: this.bloodType,
-    hasNewNotif: this.hasNewNotif,
+    newNotifs: this.newNotifs,
     birthday: this.birthday
   );
 

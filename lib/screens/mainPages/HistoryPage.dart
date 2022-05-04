@@ -43,8 +43,8 @@ class _HistoryPageState extends State<HistoryPage> {
   void deleteHandler(String hid) async {
     showDialog(context: context, builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Remove Request'),
-        content: Text('Do you really want to delete this request?'),
+        title: Text('Remove History'),
+        content: Text('Do you really want to delete this history?'),
         actions: [
           TextButton(onPressed: () async {
             Navigator.of(context).pop();

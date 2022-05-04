@@ -33,7 +33,7 @@ class DatabaseService {
       longitude: snapshot.get('longitude') ?? 0,
       isDonor: snapshot.get('isDonor') ?? false,
       bloodType: snapshot.get('bloodType') ?? 'O',
-      hasNewNotif: snapshot.get('isDonor') ?? false,
+      newNotifs: snapshot.get('newNotifs') ?? 0,
       birthday: snapshot.get('birthday').toDate(),
     );
   }
@@ -82,7 +82,7 @@ class DatabaseService {
         longitude: doc.get('longitude') ?? 0,
         isDonor: doc.get('isDonor') ?? false,
         bloodType: doc.get('bloodType') ?? 'O',
-        hasNewNotif: doc.get('isDonor') ?? false,
+        newNotifs: doc.get('newNotifs') ?? 0,
         birthday: doc.get('birthday').toDate(),
 
       );
@@ -201,12 +201,13 @@ class DatabaseService {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
 
     try {
-      await notificationCollection
-        .add(notification.toMap())
-        .then((value) => result = 'SUCCESS')
-        .catchError((error) => result = error.toString());
+      AccountData account = await getUserData(notification.uid);
+      await notificationCollection.add(notification.toMap());
+      await userCollection.doc(notification.uid).update({'newNotifs': account.newNotifs + 1});
+      result = 'SUCCESS';
       return result;
     } catch (e) {
+      result = e.toString();
       return result;
     }
   }
@@ -225,14 +226,29 @@ class DatabaseService {
     }
   }
 
-  Future<String> updateDonor(String rid, List<String> donorIds, String uid) async {
+  Future<String> seenNotification(String uid) async {
+    String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
+
+    try {
+      await userCollection.doc(uid).update({'newNotifs': 0});
+      result = 'SUCCESS';
+      return result;
+    } catch (e) {
+      result = e.toString();
+      return result;
+    }
+  }
+
+  Future<String> updateDonor(String rid, List<String> donorIds, String uid, String ownerUid) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
       await requestCollection.doc(rid).update({'donorIds': donorIds});
       if(donorIds.contains(uid)) {
         await addHistory(History(uid: uid, heading: 'Donation Offer', body: 'You\'ve offer your blood donation to a request with rid=$rid'));
+        await addNotification(AppNotification(uid: ownerUid, heading: 'Donation Offer', body: 'A user with uid=$uid offers to donate blood for your request'));
       } else {
         await addHistory(History(uid: uid, heading: 'Donation Retraction', body: 'You\'ve pulled out your blood donation offer to a request with rid=$rid'));
+        await addNotification(AppNotification(uid: ownerUid, heading: 'Donation Retraction', body: 'A user with uid=$uid pulled out donation offer for your request'));
       }
       result = 'SUCCESS';
       return result;
@@ -242,11 +258,15 @@ class DatabaseService {
     }
   }
 
-  Future<String> setFinalDonor(String rid, String finalDonor, String uid) async {
+  Future<String> setFinalDonor(String rid, String finalDonor, String uid, String lastDonor) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
       await requestCollection.doc(rid).update({'finalDonor': finalDonor});
-      await addHistory(History(uid: uid, heading: 'Donor Selection', body: 'You\'ve choosen a user with uid=${rid} as the blood donor'));
+      await addHistory(History(uid: uid, heading: 'Donor Selection', body: 'You\'ve chosen a user with uid=$rid as the blood donor'));
+      await addNotification(AppNotification(uid: finalDonor, heading: 'Donation Selection', body: 'The seeker with uid=$uid chose you as the donor'));
+      if(lastDonor != "") {
+        await addNotification(AppNotification(uid: lastDonor, heading: 'Donation Selection', body: 'You are no longer chosen as donor as the seeker with uid=$uid chose a different donor'));
+      }
       result = 'SUCCESS';
       return result;
     } catch (e) {
@@ -264,6 +284,14 @@ class DatabaseService {
       return result;
     }catch (e) {
       return result;
+    }
+  }
+
+  Future<AccountData> getUserData(String uid) async {
+    try {
+      return _accountFromSnapshot(await userCollection.doc(uid).get());
+    }catch (e) {
+      rethrow;
     }
   }
 
