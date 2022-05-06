@@ -96,8 +96,8 @@ class _MainWrapperState extends State<MainWrapper> {
                   }
                   _key.currentState.openEndDrawer();
                 }, icon: Badge(
-                    badgeColor: Colors.amberAccent,
-                    badgeContent: Text(account.newNotifs.toString(), style: TextStyle(color: Colors.black)),
+                    badgeColor: Colors.indigo[800],
+                    badgeContent: Text(account.newNotifs.toString(), style: TextStyle(color: Colors.white)),
                     showBadge: account.newNotifs > 0,
                     position: BadgePosition.topEnd(),
                     child: Icon(Icons.notifications_rounded)

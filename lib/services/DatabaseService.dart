@@ -330,7 +330,7 @@ class DatabaseService {
   }
 
   Stream<List<AccountData>> get users {
-    return userCollection.snapshots().map(_accountListFromSnapshot);
+    return userCollection.where("isDonor", isEqualTo: true).snapshots().map(_accountListFromSnapshot);
   }
 
   Stream<List<Request>> get requests {
