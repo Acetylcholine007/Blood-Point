@@ -15,6 +15,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     AccountData account = Provider.of<AccountData>(context);
 
     return DefaultTabController(
@@ -25,26 +26,35 @@ class _ProfilePageState extends State<ProfilePage> {
           appBar: PreferredSize(
             preferredSize:
             Size.fromHeight(MediaQuery.of(context).size.height),
-            child: const SizedBox(
+            child: SizedBox(
               height: 50.0,
-              child: TabBar(
-                labelColor: Colors.black,
-                tabs: [
-                  Tab(
-                    text: "Profile Settings",
+              child: Material(
+                elevation: 3,
+                child: Container(
+                  color: theme.primaryColorDark,
+                  child: const TabBar(
+                    indicatorColor: Colors.white,
+                    tabs: [
+                      Tab(
+                        text: "Profile Settings",
+                      ),
+                      Tab(
+                        text: "Change Password",
+                      ),
+                    ],
                   ),
-                  Tab(
-                    text: "Change Password",
-                  ),
-                ],
+                ),
               ),
             ),
           ),
-          body: TabBarView(
-            children: [
-              ProfileEditor(account),
-              PasswordEditor(account.uid)
-            ],
+          body: Container(
+            padding: EdgeInsets.all(16),
+            child: TabBarView(
+              children: [
+                ProfileEditor(account),
+                PasswordEditor(account.uid)
+              ],
+            ),
           ),
         ),
       ),

@@ -11,8 +11,9 @@ class RequestViewer extends StatefulWidget {
   final Request request;
   final AccountData account;
   final String myUid;
+  final String myBloodType;
 
-  const RequestViewer(this.request, {Key key, this.account, this.myUid}) : super(key: key);
+  const RequestViewer(this.request, {Key key, this.account, this.myUid, this.myBloodType}) : super(key: key);
 
   @override
   _RequestViewerState createState() => _RequestViewerState();
@@ -32,21 +33,39 @@ class _RequestViewerState extends State<RequestViewer> {
   }
 
   void donateHandler() async {
-    List<String> donorIds = request.donorIds;
-    if(!isDonor()) {
-      donorIds.add(widget.myUid);
-    } else {
-      donorIds.remove(widget.myUid);
-    }
-    String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid, widget.request.uid);
-    if(result == 'SUCCESS') {
-      setState(() => request.donorIds = donorIds);
+    if(widget.request.bloodType == widget.myBloodType) {
+      List<String> donorIds = request.donorIds;
+      if(!isDonor()) {
+        donorIds.add(widget.myUid);
+      } else {
+        donorIds.remove(widget.myUid);
+      }
+      String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid, widget.request.uid);
+      if(result == 'SUCCESS') {
+        setState(() => request.donorIds = donorIds);
+      } else {
+        showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(isDonor() ? 'Retract Donation Offer' : 'File Donation Offer'),
+              content: Text(result),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('OK')
+                )
+              ],
+            )
+        );
+      }
     } else {
       showDialog(
           context: context,
           builder: (context) => AlertDialog(
             title: Text(isDonor() ? 'Retract Donation Offer' : 'File Donation Offer'),
-            content: Text(result),
+            content: Text('Your blood type is not compatible to what the seeker is requesting'),
             actions: [
               TextButton(
                   onPressed: () {
@@ -168,44 +187,56 @@ class _RequestViewerState extends State<RequestViewer> {
           // IconButton(onPressed: terminateHandler, icon: Icon(Icons.cancel_rounded)),
           IconButton(onPressed: deleteHandler, icon: Icon(Icons.delete_rounded)),
         ] : [
-          IconButton(onPressed: donateHandler, icon: isDonor() ? Icon(Icons.check_box_rounded) : Icon(Icons.check_box_outline_blank_rounded))
+          ElevatedButton.icon(
+            icon: isDonor() ? Icon(Icons.cancel_rounded) : Icon(Icons.volunteer_activism),
+            onPressed: donateHandler,
+            label: Text(isDonor() ? 'Retract Offer' : 'Offer Donation'),
+          ),
         ],
       ),
       body: Container(
+        padding: EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              flex: 1,
-              child: Text(widget.account.fullName)
+            Center(child: CircleAvatar(child: Icon(Icons.person_rounded, size: 40), radius: 40)),
+            Center(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(widget.account.fullName, style: theme.textTheme.headline5, textAlign: TextAlign.center),
+                ]
+              ),
             ),
+            Divider(height: 25, color: theme.primaryColorDark),
+            Text('Information', style: theme.textTheme.headline5),
+            SizedBox(height: 10),
+            Row(children: [
+              Icon(Icons.email_rounded),
+              SizedBox(width: 10),
+              Text(widget.account.email, style: theme.textTheme.bodyText1),
+            ]),
+            SizedBox(height: 10),
+            Row(children: [
+              Icon(Icons.phone_rounded),
+              SizedBox(width: 10),
+              Text(widget.account.contactNo, style: theme.textTheme.bodyText1),
+            ]),
+            SizedBox(height: 10),
+            Row(children: [
+              Icon(Icons.location_on_rounded),
+              SizedBox(width: 10),
+              Text(widget.account.address, style: theme.textTheme.bodyText1),
+            ]),
+            Divider(height: 25, color: theme.primaryColorDark),
+            Text('Looking for ${request.bloodType} blood type donation', style: theme.textTheme.bodyText1),
+            SizedBox(height: 10),
+            Text(request.message, style: theme.textTheme.bodyText2, maxLines: 3, overflow: TextOverflow.ellipsis),
+            Divider(height: 25, color: theme.primaryColorDark),
+            Text('Willing Donors', style: theme.textTheme.headline5),
+            SizedBox(height: 10),
             Expanded(
                 flex: 1,
-                child: Text(widget.account.email)
-            ),
-            Expanded(
-                flex: 1,
-                child: Text(widget.account.contactNo)
-            ),
-            Expanded(
-                flex: 1,
-                child: Text(widget.account.address)
-            ),
-            Expanded(
-                flex: 1,
-                child: Text('Looking for ${request.bloodType} blood type donation')
-            ),
-            Expanded(
-                flex: 1,
-                child: Text(request.message)
-            ),
-            Divider(),
-            Expanded(
-                flex: 1,
-                child: Text('Willing Donors', style: theme.textTheme.headline6)
-            ),
-            Expanded(
-                flex: 8,
                 child: request.donorIds.isNotEmpty ? ListView.builder(
                   itemCount: request.donorIds.length,
                   itemBuilder: (BuildContext context, int index) {
@@ -218,33 +249,48 @@ class _RequestViewerState extends State<RequestViewer> {
                                 context,
                                 MaterialPageRoute(builder: (context) => ProfileViewer(snapshot.data)),
                               ),
+                              child: Card(
+                                child: ListTile(
+                                  leading: CircleAvatar(
+                                    child: Text('${index + 1}', style: theme.textTheme.headline6.copyWith(color: Colors.white)),
+                                    backgroundColor: theme.primaryColor,
+                                  ),
+                                  title: Text(snapshot.data.fullName),
+                                  subtitle: Text(snapshot.data.email),
+                                  trailing: request.uid == widget.myUid ? IconButton(
+                                    onPressed: () => setDonorHandler(snapshot.data.uid),
+                                    icon: snapshot.data.uid == request.finalDonor ? Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank_rounded),
+                                  ) : null,
+                                ),
+                              ),
+                            );
+                          } else {
+                            return Card(
                               child: ListTile(
                                 leading: CircleAvatar(
                                   child: Text('${index + 1}', style: theme.textTheme.headline6.copyWith(color: Colors.white)),
                                   backgroundColor: theme.primaryColor,
                                 ),
-                                title: Text(snapshot.data.fullName),
-                                subtitle: Text(snapshot.data.email),
-                                trailing: request.uid == widget.myUid ? IconButton(
-                                  onPressed: () => setDonorHandler(snapshot.data.uid),
-                                  icon: snapshot.data.uid == request.finalDonor ? Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank_rounded),
-                                ) : null,
+                                title: LinearProgressIndicator(),
+                                subtitle: LinearProgressIndicator(),
                               ),
-                            );
-                          } else {
-                            return ListTile(
-                              leading: CircleAvatar(
-                                child: Text('${index + 1}', style: theme.textTheme.headline6.copyWith(color: Colors.white)),
-                                backgroundColor: theme.primaryColor,
-                              ),
-                              title: LinearProgressIndicator(),
-                              subtitle: LinearProgressIndicator(),
                             );
                           }
                         }
                     );
                   }
-                ) : NoData('No willing donors yet')
+                ) : Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 1,
+                      color: theme.primaryColorDark
+                    ),
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(20.0)
+                    ),
+                  ),
+                    child: NoData('No willing donors yet', Icons.bloodtype_rounded)
+                )
             ),
           ],
         ),

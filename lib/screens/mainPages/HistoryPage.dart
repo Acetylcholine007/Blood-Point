@@ -82,6 +82,7 @@ class _HistoryPageState extends State<HistoryPage> {
     List<History> history = Provider.of<List<History>>(context);
 
     return history != null ? history.isNotEmpty ? Container(
+      padding: EdgeInsets.all(16),
       child: ListView.builder(
         itemCount: history.length,
         itemBuilder: (BuildContext context, int index) {
@@ -106,14 +107,16 @@ class _HistoryPageState extends State<HistoryPage> {
                   ],
                 )
               ),
-            child: ListTile(
-              leading: iconSelector(history[index].heading),
-              title: Text(history[index].heading),
-              subtitle: Text(datetimeFormatter.format(history[index].datetime)),
+            child: Card(
+              child: ListTile(
+                leading: iconSelector(history[index].heading),
+                title: Text(history[index].heading),
+                subtitle: Text(datetimeFormatter.format(history[index].datetime)),
+              ),
             ),
           );
         },
       ),
-    ) : NoData('No History') : Loading('Loading History');
+    ) : NoData('No History', Icons.history_rounded) : Loading('Loading History');
   }
 }

@@ -32,28 +32,35 @@ class _FeedPageState extends State<FeedPage> {
         appBar: PreferredSize(
           preferredSize:
           Size.fromHeight(MediaQuery.of(context).size.height),
-          child: const SizedBox(
+          child: SizedBox(
             height: 50.0,
-            child: TabBar(
-              labelColor: Colors.black,
-              tabs: [
-                Tab(
-                  text: "All Requests",
+            child: Material(
+              elevation: 3,
+              child: Container(
+                color: theme.primaryColorDark,
+                child: const TabBar(
+                  indicatorColor: Colors.white,
+                  tabs: [
+                    Tab(
+                      text: "All Requests",
+                    ),
+                    Tab(
+                      text: "My Requests",
+                    ),
+                    Tab(
+                      text: "My Donations",
+                    ),
+                  ],
                 ),
-                Tab(
-                  text: "My Requests",
-                ),
-                Tab(
-                  text: "My Donations",
-                ),
-              ],
+              ),
             ),
           ),
         ),
         body: requests != null ? Container(
+          padding: EdgeInsets.all(16),
           child: TabBarView(
             children: [
-              requests.isEmpty ? NoData('No Requests') : ListView.builder(
+              requests.isEmpty ? NoData('No Requests', Icons.dynamic_feed_rounded) : ListView.builder(
                   itemCount: requests.length,
                   itemBuilder: (BuildContext context, int index) {
                     return FutureBuilder<AccountData>(
@@ -63,7 +70,7 @@ class _FeedPageState extends State<FeedPage> {
                             return GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => RequestViewer(requests[index], account: snapshot.data, myUid: account.uid)),
+                                MaterialPageRoute(builder: (context) => RequestViewer(requests[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType)),
                               ),
                               child: RequestTile(requests[index], account: snapshot.data),
                             );
@@ -74,7 +81,7 @@ class _FeedPageState extends State<FeedPage> {
                     );
                   }
               ),
-              myRequest.isEmpty ? NoData('No Requests') : ListView.builder(
+              myRequest.isEmpty ? NoData('No Requests', Icons.dynamic_feed_rounded) : ListView.builder(
                   itemCount: myRequest.length,
                   itemBuilder: (BuildContext context, int index) {
                     return FutureBuilder<AccountData>(
@@ -84,7 +91,7 @@ class _FeedPageState extends State<FeedPage> {
                             return GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => RequestViewer(myRequest[index], account: snapshot.data, myUid: account.uid)),
+                                MaterialPageRoute(builder: (context) => RequestViewer(myRequest[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType)),
                               ),
                               child: RequestTile(myRequest[index], account: snapshot.data),
                             );
@@ -95,7 +102,7 @@ class _FeedPageState extends State<FeedPage> {
                     );
                   }
               ),
-              myDonations.isEmpty ? NoData('No Donations') : ListView.builder(
+              myDonations.isEmpty ? NoData('No Donations', Icons.bloodtype_rounded) : ListView.builder(
                   itemCount: myDonations.length,
                   itemBuilder: (BuildContext context, int index) {
                     return FutureBuilder<AccountData>(
@@ -105,7 +112,7 @@ class _FeedPageState extends State<FeedPage> {
                             return GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => RequestViewer(myDonations[index], account: snapshot.data, myUid: account.uid)),
+                                MaterialPageRoute(builder: (context) => RequestViewer(myDonations[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType)),
                               ),
                               child: RequestTile(myDonations[index], account: snapshot.data),
                             );

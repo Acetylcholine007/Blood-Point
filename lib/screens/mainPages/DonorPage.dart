@@ -17,6 +17,7 @@ class _DonorPageState extends State<DonorPage> {
   
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     AccountData account = Provider.of<AccountData>(context);
     List<AccountData> accounts = Provider.of<List<AccountData>>(context);
     
@@ -26,26 +27,35 @@ class _DonorPageState extends State<DonorPage> {
         appBar: PreferredSize(
           preferredSize:
           Size.fromHeight(MediaQuery.of(context).size.height),
-          child: const SizedBox(
+          child: SizedBox(
             height: 50.0,
-            child: TabBar(
-              labelColor: Colors.black,
-              tabs: [
-                Tab(
-                  text: "LIST VIEW",
+            child: Material(
+              elevation: 3,
+              child: Container(
+                color: theme.primaryColorDark,
+                child: const TabBar(
+                  indicatorColor: Colors.white,
+                  tabs: [
+                    Tab(
+                      text: "LIST VIEW",
+                    ),
+                    Tab(
+                      text: "MAP VIEW",
+                    ),
+                  ],
                 ),
-                Tab(
-                  text: "MAP VIEW",
-                ),
-              ],
+              ),
             ),
           ),
         ),
-        body: TabBarView(
-          children: [
-            DonorList(accounts),
-            DonorMap(accounts)
-          ],
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: TabBarView(
+            children: [
+              DonorList(accounts),
+              DonorMap(accounts)
+            ],
+          ),
         ),
       ),
     ) : Loading('Loading Donors');

@@ -77,57 +77,91 @@ class _ProfileEditorState extends State<ProfileEditor> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                  initialValue: account.fullName,
-                  decoration: formFieldDecoration.copyWith(hintText: 'Full Name'),
-                  validator: (val) => val.isEmpty ? 'Enter Full Name' : null,
-                  onChanged: (val) => setState(() => account.fullName = val)
-              ),
-              TextFormField(
-                  initialValue: account.username,
-                  decoration: formFieldDecoration.copyWith(hintText: 'Username'),
-                  validator: (val) => val.isEmpty ? 'Enter Username' : null,
-                  onChanged: (val) => setState(() => account.username = val)
-              ),
-              TextFormField(
-                  initialValue: account.address,
-                  decoration: formFieldDecoration.copyWith(hintText: 'Address'),
-                  validator: (val) => val.isEmpty ? 'Enter Address' : null,
-                  onChanged: (val) => setState(() => account.address = val)
-              ),
-              TextFormField(
-                  initialValue: account.contactNo,
-                  decoration: formFieldDecoration.copyWith(hintText: 'Contact No'),
-                  validator: (val) => val.isEmpty ? 'Enter Contact No' : null,
-                  onChanged: (val) => setState(() => account.contactNo = val)
-              ),
-              DropdownButtonFormField(
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+                initialValue: account.fullName,
+                decoration: formFieldDecoration.copyWith(hintText: 'Full Name'),
+                validator: (val) => val.isEmpty ? 'Enter Full Name' : null,
+                onChanged: (val) => setState(() => account.fullName = val)
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+                initialValue: account.username,
+                decoration: formFieldDecoration.copyWith(hintText: 'Username'),
+                validator: (val) => val.isEmpty ? 'Enter Username' : null,
+                onChanged: (val) => setState(() => account.username = val)
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+                initialValue: account.address,
+                decoration: formFieldDecoration.copyWith(hintText: 'Address'),
+                validator: (val) => val.isEmpty ? 'Enter Address' : null,
+                onChanged: (val) => setState(() => account.address = val)
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+                initialValue: account.contactNo,
+                decoration: formFieldDecoration.copyWith(hintText: 'Contact No'),
+                validator: (val) => val.isEmpty ? 'Enter Contact No' : val.length != 11 ? 'Phone number length should only be 11' : null,
+                onChanged: (val) => setState(() => account.contactNo = val)
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              enableInteractiveSelection: false,
+              onTap: (){
+                FocusScope.of(context).requestFocus(new FocusNode());
+                showDatePicker(
+                  context: context,
+                  initialDate: DateTime(DateTime.now().year - 4),
+                  firstDate: DateTime(1970),
+                  lastDate: DateTime(DateTime.now().year - 4),
+                ).then((pickedDate) {
+                  if (pickedDate == null) {
+                    return;
+                  }
+                  setState(() {
+                    account.birthday = pickedDate;
+                  });
+                });
+              },
+              initialValue: dateFormatter.format(account.birthday),
+              decoration: formFieldDecoration.copyWith(hintText: 'Birthday', suffixIcon: Icon(Icons.calendar_today_rounded)),
+              validator: (val) => val.isEmpty ? 'Enter Birthday' : null,
+            ),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(flex: 6, child: DropdownButtonFormField(
                 value: account.bloodType,
-                decoration: dropdownDecoration,
+                decoration: dropdownDecoration.copyWith(prefixIcon: Icon(Icons.bloodtype_rounded)),
                 items: bloodTypes.asMap().entries.map((filter) => DropdownMenuItem(
                   value: filter.value,
                   child: Text(filter.value, overflow: TextOverflow.ellipsis),
                 )).toList(),
                 onChanged: (value) => setState(() => account.bloodType = value),
-              ),
-              Switch(value: account.isDonor, onChanged: (val) => setState(() => account.isDonor = val)),
-              Divider(
-                thickness: 2,
-                height: 25
-              ),
-              ElevatedButton(
-                  child: Text('Save Changes'),
-                  onPressed: submitHandler
-              )
-            ],
-          ),
+              )),
+                SizedBox(width: 10),
+                Expanded(flex: 4, child: Text('Set as donor')),
+                Expanded(flex: 2, child: Switch(value: account.isDonor, onChanged: (val) => setState(() => account.isDonor = val)))
+              ],
+            ),
+            SizedBox(height: 10),
+            Divider(
+              thickness: 1,
+              height: 25,
+              color: theme.primaryColorDark,
+            ),
+            ElevatedButton(
+              child: Text('Save Changes'),
+              onPressed: submitHandler,
+              style: formButtonDecoration,
+            )
+          ],
         ),
       ),
     );

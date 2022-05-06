@@ -88,7 +88,7 @@ class _MainWrapperState extends State<MainWrapper> {
           child: Scaffold(
             key: _key,
             appBar: AppBar(
-              title: Text('Blood Point'),
+              title: Text('FastBlood PH'),
               actions: [
                 account != null ? IconButton(onPressed: () {
                   if(account.newNotifs > 0) {
@@ -127,13 +127,13 @@ class _MainWrapperState extends State<MainWrapper> {
                         ListTile(
                           contentPadding: EdgeInsets.all(0),
                           textColor: Colors.white,
-                          title: Text(notifications.isEmpty ? 'No Notifications' : '${notifications.length} ${notifications.length > 1 ? 'Notifications' : 'Notification'}'),
+                          title: Text(notifications.isEmpty ? '0 Notifications' : '${notifications.length} ${notifications.length > 1 ? 'Notifications' : 'Notification'}'),
                         )
                       ],
                     ),
                   ),
                   Expanded(
-                    child: ListView.separated(
+                    child: notifications.isEmpty ? NoData('No Notifications', Icons.notifications_rounded) : ListView.separated(
                       padding: EdgeInsets.all(0),
                       itemCount: notifications.length,
                       itemBuilder: (BuildContext context, int index) {
@@ -185,7 +185,7 @@ class _MainWrapperState extends State<MainWrapper> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Blood Point',
+                          'FastBlood PH',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 28,

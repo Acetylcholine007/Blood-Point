@@ -22,8 +22,14 @@ InputDecoration searchFieldDecoration = InputDecoration(
 InputDecoration dropdownDecoration = InputDecoration(
   contentPadding: EdgeInsets.all(10),
   filled: true,
+  enabledBorder: OutlineInputBorder(
+    borderSide: const BorderSide(
+        color: Colors.grey,
+        width: 1,
+    ),
+    borderRadius: BorderRadius.circular(10),
+  ),
   border: OutlineInputBorder(
-    // borderSide: BorderSide.none,
     borderRadius: BorderRadius.circular(10),
   ),
   fillColor: Colors.white,
@@ -50,7 +56,7 @@ ShapeDecoration fieldContainerDecoration = ShapeDecoration(
 ButtonStyle formButtonDecoration = ButtonStyle(
     elevation: MaterialStateProperty.all(6),
     textStyle: MaterialStateProperty.all(TextStyle(
-        fontSize: 20
+        fontSize: 16
     )),
     padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 8, horizontal: 20)),
     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -63,7 +69,7 @@ ButtonStyle formButtonDecoration = ButtonStyle(
 ButtonStyle appButtonDecoration = ButtonStyle(
     elevation: MaterialStateProperty.all(6),
     textStyle: MaterialStateProperty.all(TextStyle(
-        fontSize: 24
+        fontSize: 20
     )),
     padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: 8, horizontal: 20)),
     // foregroundColor: MaterialStateProperty.all(Colors.white),

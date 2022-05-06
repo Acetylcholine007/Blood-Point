@@ -3,6 +3,7 @@ import 'package:blood_point/shared/decorations.dart';
 import 'package:flutter/material.dart';
 
 import '../../services/DatabaseService.dart';
+import '../../shared/constants.dart';
 
 class RequestEditor extends StatefulWidget {
   final bool isNew;
@@ -18,7 +19,8 @@ class _RequestEditorState extends State<RequestEditor> {
   final _formKey = GlobalKey<FormState>();
   String rid;
   String message = "";
-  String bloodType = "O";
+  String bloodType = "O+";
+  DateTime deadline = DateTime.now();
   List<String> donorIds;
   bool isComplete;
 
@@ -103,9 +105,6 @@ class _RequestEditorState extends State<RequestEditor> {
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.isNew ? 'Create Blood Request' : 'Edit Blood Request'),
-          actions: [
-            IconButton(icon: Icon(Icons.save), onPressed: saveHandler)
-          ],
         ),
         body: Container(
           padding: EdgeInsets.all(16),
@@ -113,6 +112,7 @@ class _RequestEditorState extends State<RequestEditor> {
             key: _formKey,
             child: SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   TextFormField(
                     keyboardType: TextInputType.multiline,
@@ -124,15 +124,42 @@ class _RequestEditorState extends State<RequestEditor> {
                     }),
                     maxLines: 5,
                   ),
+                  SizedBox(height: 10),
+                  TextFormField(
+                      enableInteractiveSelection: false,
+                      onTap: (){
+                      FocusScope.of(context).requestFocus(new FocusNode());
+                      showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now().subtract(Duration(days: 7)),
+                        lastDate: DateTime(DateTime.now().year + 1),
+                      ).then((pickedDate) {
+                        if (pickedDate == null) {
+                          return;
+                        }
+                        setState(() {
+                          deadline = pickedDate;
+                        });
+                      });
+                    },
+                    initialValue: dateFormatter.format(deadline),
+                    decoration: formFieldDecoration.copyWith(hintText: 'Deadline', suffixIcon: Icon(Icons.calendar_today_rounded)),
+                    validator: (val) => val.isEmpty ? 'Enter Deadline' : null,
+                  ),
+                  SizedBox(height: 10),
                   DropdownButtonFormField(
                     value: bloodType,
-                    decoration: dropdownDecoration.copyWith(fillColor: theme.backgroundColor),
-                    items: ['A', 'B', 'AB', 'O'].asMap().entries.map((filter) => DropdownMenuItem(
+                    decoration: dropdownDecoration.copyWith(prefixIcon: Icon(Icons.bloodtype_rounded)),
+                    items: bloodTypes.asMap().entries.map((filter) => DropdownMenuItem(
                       value: filter.value,
                       child: Text(filter.value, overflow: TextOverflow.ellipsis),
                     )).toList(),
                     onChanged: (value) => setState(() => bloodType = value),
                   ),
+                  SizedBox(height: 10),
+                  Divider(height: 25, color: theme.primaryColorDark),
+                  ElevatedButton(onPressed: saveHandler, child: Text('Save'), style: formButtonDecoration)
                 ],
               ),
             ),

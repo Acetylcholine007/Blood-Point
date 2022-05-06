@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../models/AccountData.dart';
 import '../../services/AuthService.dart';
+import '../../shared/constants.dart';
 import '../../shared/decorations.dart';
 
 class SignupPage extends StatefulWidget {
@@ -21,13 +22,15 @@ class _SignupPageState extends State<SignupPage> {
   String username = '';
   String address = '';
   String contactNo = '';
-  String bloodType = 'O';
+  String bloodType = 'O+';
   double latitude = 14;
   double longitude = 120;
   bool isDonor = false;
   bool showPassword = true;
   bool loading = false;
   String error = '';
+  DateTime birthday = DateTime(DateTime.now().year - 4);
+  // DateTime birthday;
 
   void submitHandler() async {
     if(_formKey.currentState.validate()) {
@@ -102,7 +105,7 @@ class _SignupPageState extends State<SignupPage> {
       onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Sign Up'),
+          title: Text('FastBlood PH Registration'),
         ),
         body: Container(
             padding: EdgeInsets.all(16),
@@ -111,6 +114,7 @@ class _SignupPageState extends State<SignupPage> {
               child: Form(
                 key: _formKey,
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextFormField(
                       initialValue: fullName,
@@ -118,30 +122,59 @@ class _SignupPageState extends State<SignupPage> {
                       validator: (val) => val.isEmpty ? 'Enter Full Name' : null,
                       onChanged: (val) => setState(() => fullName = val)
                     ),
+                    SizedBox(height: 10),
                     TextFormField(
                       initialValue: username,
                       decoration: formFieldDecoration.copyWith(hintText: 'Username'),
                       validator: (val) => val.isEmpty ? 'Enter Username' : null,
                       onChanged: (val) => setState(() => username = val)
                     ),
+                    SizedBox(height: 10),
                     TextFormField(
                       initialValue: address,
                       decoration: formFieldDecoration.copyWith(hintText: 'Address'),
                       validator: (val) => val.isEmpty ? 'Enter Address' : null,
                       onChanged: (val) => setState(() => address = val)
                     ),
+                    SizedBox(height: 10),
                     TextFormField(
                         initialValue: contactNo,
                         decoration: formFieldDecoration.copyWith(hintText: 'Contact No'),
-                        validator: (val) => val.isEmpty ? 'Enter Contact No' : null,
+                        validator: (val) => val.isEmpty ? 'Enter Contact No' : val.length != 11 ? 'Phone number length should only be 11' : null,
                         onChanged: (val) => setState(() => contactNo = val)
                     ),
+                    SizedBox(height: 10),
+                    TextFormField(
+                      enableInteractiveSelection: false,
+                      onTap: (){
+                        FocusScope.of(context).requestFocus(new FocusNode());
+                        showDatePicker(
+                          context: context,
+                          initialDate: DateTime(DateTime.now().year - 4),
+                          firstDate: DateTime(1970),
+                          lastDate: DateTime(DateTime.now().year - 4),
+                        ).then((pickedDate) {
+                          if (pickedDate == null) {
+                            return;
+                          }
+                          setState(() {
+                            birthday = pickedDate;
+                          });
+                        });
+                      },
+                      // initialValue: birthday == null ? null : dateFormatter.format(birthday),
+                      initialValue: dateFormatter.format(birthday),
+                      decoration: formFieldDecoration.copyWith(hintText: 'Birthday', suffixIcon: Icon(Icons.calendar_today_rounded)),
+                      validator: (val) => val.isEmpty ? 'Enter Birthday' : null,
+                    ),
+                    SizedBox(height: 10),
                     TextFormField(
                       initialValue: email,
                       decoration: formFieldDecoration.copyWith(hintText: 'Email'),
                       validator: (val) => val.isEmpty ? 'Enter Email' : null,
                       onChanged: (val) => setState(() => email = val)
                     ),
+                    SizedBox(height: 10),
                     TextFormField(
                       initialValue: password,
                       decoration: formFieldDecoration.copyWith(suffixIcon: IconButton(
@@ -154,23 +187,32 @@ class _SignupPageState extends State<SignupPage> {
                       onChanged: (val) => setState(() => password = val),
                       obscureText: showPassword,
                     ),
-                    DropdownButtonFormField(
-                      value: bloodType,
-                      decoration: dropdownDecoration.copyWith(fillColor: theme.backgroundColor),
-                      items: ['A', 'B', 'AB', 'O'].asMap().entries.map((filter) => DropdownMenuItem(
-                        value: filter.value,
-                        child: Text(filter.value, overflow: TextOverflow.ellipsis),
-                      )).toList(),
-                      onChanged: (value) => setState(() => bloodType = value),
+                    SizedBox(height: 10),
+                    Row(
+                      children: [Expanded(flex: 6, child: DropdownButtonFormField(
+                        value: bloodType,
+                        decoration: dropdownDecoration.copyWith(prefixIcon: Icon(Icons.bloodtype_rounded)),
+                        items: bloodTypes.asMap().entries.map((filter) => DropdownMenuItem(
+                          value: filter.value,
+                          child: Text(filter.value, overflow: TextOverflow.ellipsis),
+                        )).toList(),
+                        onChanged: (value) => setState(() => bloodType = value),
+                      )),
+                        SizedBox(width: 10),
+                        Expanded(flex: 4, child: Text('Set as donor')),
+                        Expanded(flex: 2, child: Switch(value: isDonor, onChanged: (val) => setState(() => isDonor = val)))
+                      ],
                     ),
-                    Switch(value: isDonor, onChanged: (val) => setState(() => isDonor = val)),
+                    SizedBox(height: 10),
                     Divider(
-                        thickness: 2,
-                        height: 25
+                      thickness: 1,
+                      height: 25,
+                      color: theme.primaryColorDark,
                     ),
                     ElevatedButton(
                       child: Text('SIGN UP'),
-                      onPressed: submitHandler
+                      onPressed: submitHandler,
+                      style: formButtonDecoration,
                     ),
                     TextButton(
                       child: Text('Already have account? Sign in'),

@@ -8,6 +8,7 @@ class Request {
   String bloodType;
   bool isComplete;
   DateTime datetime;
+  DateTime deadline;
   List<String> donorIds;
 
   Request({
@@ -18,7 +19,8 @@ class Request {
     this.bloodType,
     this.donorIds = const [],
     this.isComplete = false,
-    this.datetime
+    this.datetime,
+    this.deadline
   });
 
   Map<String, dynamic> toMap() {
@@ -29,7 +31,8 @@ class Request {
       'bloodType': this.bloodType,
       'isComplete': this.isComplete,
       'donorIds': this.donorIds,
-      'datetime': Timestamp.fromDate(this.datetime)
+      'datetime': Timestamp.fromDate(this.datetime),
+      'deadline': Timestamp.fromDate(this.deadline)
     };
   }
 }

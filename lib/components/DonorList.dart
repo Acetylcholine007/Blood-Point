@@ -21,16 +21,18 @@ class DonorList extends StatelessWidget {
               context,
               MaterialPageRoute(builder: (context) => ProfileViewer(accounts[index])),
             ),
-            child: ListTile(
-              leading: CircleAvatar(
-                child: Text('${index + 1}', style: theme.textTheme.headline6.copyWith(color: Colors.white)),
+            child: Card(
+              child: ListTile(
+                leading: CircleAvatar(
+                  child: Text(accounts[index].bloodType, style: theme.textTheme.headline6.copyWith(color: Colors.white)),
+                ),
+                title: Text(accounts[index].fullName),
+                subtitle: Text(accounts[index].email),
               ),
-              title: Text(accounts[index].fullName),
-              subtitle: Text(accounts[index].email),
             ),
           );
         },
-      ) : NoData('No Donors available'),
+      ) : NoData('No Donors available', Icons.people_rounded),
     );
   }
 }

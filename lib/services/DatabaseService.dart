@@ -48,6 +48,7 @@ class DatabaseService {
       isComplete: snapshot.get('isComplete') ?? false,
       donorIds: List<String>.from(snapshot.get('donorIds') as List) ?? [],
       datetime: snapshot.get('datetime').toDate(),
+      deadline: snapshot.get('deadline').toDate(),
     );
   }
   //
@@ -64,6 +65,7 @@ class DatabaseService {
         isComplete: doc.get('isComplete') ?? false,
         donorIds: List<String>.from(doc.get('donorIds') as List) ?? [],
         datetime: doc.get('datetime').toDate(),
+        deadline: doc.get('deadline').toDate(),
       );
     }).toList();
   }

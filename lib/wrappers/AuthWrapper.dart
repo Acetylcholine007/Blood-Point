@@ -3,6 +3,7 @@ import 'package:blood_point/models/AccountData.dart';
 import 'package:blood_point/models/AppNotification.dart';
 import 'package:blood_point/models/History.dart';
 import 'package:blood_point/models/Request.dart';
+import 'package:blood_point/screens/mainPages/AuthPage.dart';
 import 'package:blood_point/screens/mainPages/LoginPage.dart';
 import 'package:blood_point/services/DatabaseService.dart';
 import 'package:flutter/material.dart';

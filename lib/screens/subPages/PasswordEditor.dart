@@ -68,47 +68,50 @@ class _PasswordEditorState extends State<PasswordEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      child: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                initialValue: password,
-                decoration: formFieldDecoration.copyWith(suffixIcon: IconButton(
-                    onPressed: () => setState(() => showPassword = !showPassword),
-                    icon: Icon(Icons.visibility)
-                ),
-                    hintText: 'New Password'
-                ),
-                validator: (val) => val.isEmpty ? 'Enter New Password' : null,
-                onChanged: (val) => setState(() => password = val),
-                obscureText: !showPassword,
+    final theme = Theme.of(context);
+
+    return SingleChildScrollView(
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              initialValue: password,
+              decoration: formFieldDecoration.copyWith(suffixIcon: IconButton(
+                  onPressed: () => setState(() => showPassword = !showPassword),
+                  icon: Icon(Icons.visibility)
               ),
-              TextFormField(
-                initialValue: confirmPassword,
-                decoration: formFieldDecoration.copyWith(suffixIcon: IconButton(
-                    onPressed: () => setState(() => showConfirmPassword = !showConfirmPassword),
-                    icon: Icon(Icons.visibility)
-                ),
-                    hintText: 'Confirm Password'
-                ),
-                validator: (val) => val.isEmpty ? 'Enter Confirm Password' : null,
-                onChanged: (val) => setState(() => confirmPassword = val),
-                obscureText: !showConfirmPassword,
+                  hintText: 'New Password'
               ),
-              Divider(
-                thickness: 2,
-                height: 25
+              validator: (val) => val.isEmpty ? 'Enter New Password' : null,
+              onChanged: (val) => setState(() => password = val),
+              obscureText: !showPassword,
+            ),
+            SizedBox(height: 10),
+            TextFormField(
+              initialValue: confirmPassword,
+              decoration: formFieldDecoration.copyWith(suffixIcon: IconButton(
+                  onPressed: () => setState(() => showConfirmPassword = !showConfirmPassword),
+                  icon: Icon(Icons.visibility)
               ),
-              ElevatedButton(
-                child: Text('Save Changes'),
-                onPressed: submitHandler
-              )
-            ],
-          ),
+                  hintText: 'Confirm Password'
+              ),
+              validator: (val) => val.isEmpty ? 'Enter Confirm Password' : null,
+              onChanged: (val) => setState(() => confirmPassword = val),
+              obscureText: !showConfirmPassword,
+            ),
+            Divider(
+              thickness: 1,
+              height: 25,
+              color: theme.primaryColorDark,
+            ),
+            ElevatedButton(
+              child: Text('Save Changes'),
+              onPressed: submitHandler,
+              style: formButtonDecoration,
+            )
+          ],
         ),
       ),
     );
