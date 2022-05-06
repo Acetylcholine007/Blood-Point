@@ -1,8 +1,11 @@
 import 'package:blood_point/components/NoData.dart';
 import 'package:blood_point/models/Request.dart';
+import 'package:blood_point/screens/subPages/MapPage.dart';
 import 'package:blood_point/screens/subPages/ProfileViewer.dart';
 import 'package:blood_point/screens/subPages/RequestEditor.dart';
+import 'package:blood_point/shared/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../models/AccountData.dart';
 import '../../services/DatabaseService.dart';
@@ -209,24 +212,34 @@ class _RequestViewerState extends State<RequestViewer> {
               ),
             ),
             Divider(height: 25, color: theme.primaryColorDark),
+            Text('Date Requested: ${datetimeFormatter.format(request.datetime)}', style: theme.textTheme.bodyText1),
+            SizedBox(height: 10),
+            Text('Request Deadline: ${datetimeFormatter.format(request.deadline)}', style: theme.textTheme.bodyText1),
+            Divider(height: 25, color: theme.primaryColorDark),
             Text('Information', style: theme.textTheme.headline5),
             SizedBox(height: 10),
             Row(children: [
-              Icon(Icons.email_rounded),
+              Expanded(flex: 1, child: ElevatedButton.icon(onPressed: () => launch("mailto:${widget.account.email}"), icon:  Icon(Icons.email_rounded), label: Text('Mail'))),
               SizedBox(width: 10),
-              Text(widget.account.email, style: theme.textTheme.bodyText1),
+              Expanded(flex: 3, child: Text(widget.account.email, style: theme.textTheme.bodyText1)),
             ]),
             SizedBox(height: 10),
             Row(children: [
-              Icon(Icons.phone_rounded),
+              Expanded(flex: 1, child: ElevatedButton.icon(onPressed: () => launch("tel://${widget.account.contactNo}"), icon:  Icon(Icons.phone_rounded), label: Text('Call'))),
               SizedBox(width: 10),
-              Text(widget.account.contactNo, style: theme.textTheme.bodyText1),
+              Expanded(flex: 3, child: Text(widget.account.contactNo, style: theme.textTheme.bodyText1)),
             ]),
             SizedBox(height: 10),
             Row(children: [
-              Icon(Icons.location_on_rounded),
+              Expanded(
+                flex: 1,
+                child: ElevatedButton.icon(onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MapPage()),
+                ), icon:  Icon(Icons.location_on_rounded), label: Text('Find')),
+              ),
               SizedBox(width: 10),
-              Text(widget.account.address, style: theme.textTheme.bodyText1),
+              Expanded(flex: 3, child: Text(widget.account.address, style: theme.textTheme.bodyText1)),
             ]),
             Divider(height: 25, color: theme.primaryColorDark),
             Text('Looking for ${request.bloodType} blood type donation', style: theme.textTheme.bodyText1),

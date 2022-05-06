@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.blood_point">
    <application
-        android:label="blood_point"
+        android:label="FastBlood PH"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

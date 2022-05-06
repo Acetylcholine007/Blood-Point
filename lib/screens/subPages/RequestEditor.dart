@@ -20,9 +20,10 @@ class _RequestEditorState extends State<RequestEditor> {
   String rid;
   String message = "";
   String bloodType = "O+";
-  DateTime deadline = DateTime.now();
+  DateTime deadline;
   List<String> donorIds;
   bool isComplete;
+  TextEditingController controller = TextEditingController();
 
   @override
   void initState() {
@@ -33,7 +34,11 @@ class _RequestEditorState extends State<RequestEditor> {
         bloodType = widget.request.bloodType;
         donorIds = widget.request.donorIds;
         isComplete = widget.request.isComplete;
+        deadline = widget.request.deadline;
+        controller.text = dateFormatter.format(widget.request.deadline);
       });
+    } else {
+      controller.text = "";
     }
     super.initState();
   }
@@ -126,24 +131,26 @@ class _RequestEditorState extends State<RequestEditor> {
                   ),
                   SizedBox(height: 10),
                   TextFormField(
+                      controller: controller,
                       enableInteractiveSelection: false,
                       onTap: (){
                       FocusScope.of(context).requestFocus(new FocusNode());
                       showDatePicker(
                         context: context,
-                        initialDate: DateTime.now(),
+                        initialDate: deadline == null ? DateTime.now() : deadline,
                         firstDate: DateTime.now().subtract(Duration(days: 7)),
                         lastDate: DateTime(DateTime.now().year + 1),
                       ).then((pickedDate) {
                         if (pickedDate == null) {
                           return;
                         }
+                        print(pickedDate);
                         setState(() {
                           deadline = pickedDate;
+                          controller.text = dateFormatter.format(pickedDate);
                         });
                       });
                     },
-                    initialValue: dateFormatter.format(deadline),
                     decoration: formFieldDecoration.copyWith(hintText: 'Deadline', suffixIcon: Icon(Icons.calendar_today_rounded)),
                     validator: (val) => val.isEmpty ? 'Enter Deadline' : null,
                   ),

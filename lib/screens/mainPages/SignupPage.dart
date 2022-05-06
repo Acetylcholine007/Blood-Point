@@ -20,7 +20,7 @@ class _SignupPageState extends State<SignupPage> {
   String password = '';
   String fullName = '';
   String username = '';
-  String address = '';
+  String address = 'Anilao';
   String contactNo = '';
   String bloodType = 'O+';
   double latitude = 14;
@@ -29,7 +29,8 @@ class _SignupPageState extends State<SignupPage> {
   bool showPassword = true;
   bool loading = false;
   String error = '';
-  DateTime birthday = DateTime(DateTime.now().year - 4);
+  DateTime birthday;
+  TextEditingController controller = TextEditingController();
   // DateTime birthday;
 
   void submitHandler() async {
@@ -98,6 +99,12 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   @override
+  void initState() {
+    controller.text = "";
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
@@ -130,11 +137,14 @@ class _SignupPageState extends State<SignupPage> {
                       onChanged: (val) => setState(() => username = val)
                     ),
                     SizedBox(height: 10),
-                    TextFormField(
-                      initialValue: address,
-                      decoration: formFieldDecoration.copyWith(hintText: 'Address'),
-                      validator: (val) => val.isEmpty ? 'Enter Address' : null,
-                      onChanged: (val) => setState(() => address = val)
+                    DropdownButtonFormField(
+                      value: address,
+                      decoration: dropdownDecoration.copyWith(prefixIcon: Icon(Icons.location_on_rounded)),
+                      items: municipalities.asMap().entries.map((filter) => DropdownMenuItem(
+                        value: filter.value,
+                        child: Text(filter.value, overflow: TextOverflow.ellipsis),
+                      )).toList(),
+                      onChanged: (value) => setState(() => address = value),
                     ),
                     SizedBox(height: 10),
                     TextFormField(
@@ -145,12 +155,13 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     SizedBox(height: 10),
                     TextFormField(
+                      controller: controller,
                       enableInteractiveSelection: false,
                       onTap: (){
                         FocusScope.of(context).requestFocus(new FocusNode());
                         showDatePicker(
                           context: context,
-                          initialDate: DateTime(DateTime.now().year - 4),
+                          initialDate: birthday == null ? DateTime(DateTime.now().year - 4) : birthday,
                           firstDate: DateTime(1970),
                           lastDate: DateTime(DateTime.now().year - 4),
                         ).then((pickedDate) {
@@ -159,11 +170,10 @@ class _SignupPageState extends State<SignupPage> {
                           }
                           setState(() {
                             birthday = pickedDate;
+                            controller.text = dateFormatter.format(pickedDate);
                           });
                         });
                       },
-                      // initialValue: birthday == null ? null : dateFormatter.format(birthday),
-                      initialValue: dateFormatter.format(birthday),
                       decoration: formFieldDecoration.copyWith(hintText: 'Birthday', suffixIcon: Icon(Icons.calendar_today_rounded)),
                       validator: (val) => val.isEmpty ? 'Enter Birthday' : null,
                     ),

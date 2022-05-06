@@ -16,6 +16,7 @@ class ProfileEditor extends StatefulWidget {
 
 class _ProfileEditorState extends State<ProfileEditor> {
   AccountData account;
+  TextEditingController controller = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool loading = false;
   String error = '';
@@ -69,6 +70,7 @@ class _ProfileEditorState extends State<ProfileEditor> {
   void initState() {
     setState(() {
       account = widget.account;
+      controller.text = dateFormatter.format(widget.account.birthday);
     });
     super.initState();
   }
@@ -97,11 +99,14 @@ class _ProfileEditorState extends State<ProfileEditor> {
                 onChanged: (val) => setState(() => account.username = val)
             ),
             SizedBox(height: 10),
-            TextFormField(
-                initialValue: account.address,
-                decoration: formFieldDecoration.copyWith(hintText: 'Address'),
-                validator: (val) => val.isEmpty ? 'Enter Address' : null,
-                onChanged: (val) => setState(() => account.address = val)
+            DropdownButtonFormField(
+              value: account.address,
+              decoration: dropdownDecoration.copyWith(prefixIcon: Icon(Icons.location_on_rounded)),
+              items: municipalities.asMap().entries.map((filter) => DropdownMenuItem(
+                value: filter.value,
+                child: Text(filter.value, overflow: TextOverflow.ellipsis),
+              )).toList(),
+              onChanged: (value) => setState(() => account.address = value),
             ),
             SizedBox(height: 10),
             TextFormField(
@@ -112,12 +117,13 @@ class _ProfileEditorState extends State<ProfileEditor> {
             ),
             SizedBox(height: 10),
             TextFormField(
+              controller: controller,
               enableInteractiveSelection: false,
               onTap: (){
                 FocusScope.of(context).requestFocus(new FocusNode());
                 showDatePicker(
                   context: context,
-                  initialDate: DateTime(DateTime.now().year - 4),
+                  initialDate: account.birthday,
                   firstDate: DateTime(1970),
                   lastDate: DateTime(DateTime.now().year - 4),
                 ).then((pickedDate) {
@@ -126,10 +132,10 @@ class _ProfileEditorState extends State<ProfileEditor> {
                   }
                   setState(() {
                     account.birthday = pickedDate;
+                    controller.text = dateFormatter.format(pickedDate);
                   });
                 });
               },
-              initialValue: dateFormatter.format(account.birthday),
               decoration: formFieldDecoration.copyWith(hintText: 'Birthday', suffixIcon: Icon(Icons.calendar_today_rounded)),
               validator: (val) => val.isEmpty ? 'Enter Birthday' : null,
             ),

@@ -1,7 +1,9 @@
 import 'package:blood_point/models/AccountData.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../models/Request.dart';
+import '../screens/subPages/MapPage.dart';
 import '../shared/constants.dart';
 
 class RequestTile extends StatelessWidget {
@@ -33,8 +35,11 @@ class RequestTile extends StatelessWidget {
             account == null ? LinearProgressIndicator() : Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TextButton.icon(onPressed: () {}, icon: Icon(Icons.location_on_rounded), label: Text(account.address, overflow: TextOverflow.ellipsis)),
-                TextButton.icon(onPressed: () {}, icon: Icon(Icons.phone_rounded), label: Text(account.contactNo))
+                TextButton.icon(onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MapPage()),
+                ), icon: Icon(Icons.location_on_rounded), label: Text(account.address, overflow: TextOverflow.ellipsis)),
+                TextButton.icon(onPressed: () => launch("tel://${account.contactNo}"), icon: Icon(Icons.phone_rounded), label: Text(account.contactNo))
               ],
             )
           ],
