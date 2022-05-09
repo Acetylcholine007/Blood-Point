@@ -48,14 +48,11 @@ class _DonorPageState extends State<DonorPage> {
             ),
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: TabBarView(
-            children: [
-              DonorList(accounts),
-              DonorMap(accounts)
-            ],
-          ),
+        body: TabBarView(
+          children: [
+            DonorList(accounts),
+            DonorMap(accounts)
+          ],
         ),
       ),
     ) : Loading('Loading Donors');

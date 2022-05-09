@@ -13,6 +13,7 @@ class DonorList extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Container(
+      padding: EdgeInsets.all(16),
       child: accounts.isNotEmpty ? ListView.builder(
         itemCount: accounts.length,
         itemBuilder: (BuildContext context, int index) {

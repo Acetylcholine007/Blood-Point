@@ -1,9 +1,11 @@
 import 'package:blood_point/services/DatabaseService.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../models/AccountData.dart';
 import '../../shared/constants.dart';
 import '../../shared/decorations.dart';
+import 'LocationPicker.dart';
 
 class ProfileEditor extends StatefulWidget {
   final AccountData account;
@@ -15,6 +17,8 @@ class ProfileEditor extends StatefulWidget {
 }
 
 class _ProfileEditorState extends State<ProfileEditor> {
+  Set<Marker> _markers;
+  LatLng target;
   AccountData account;
   TextEditingController controller = TextEditingController();
   final _formKey = GlobalKey<FormState>();
@@ -71,8 +75,19 @@ class _ProfileEditorState extends State<ProfileEditor> {
     setState(() {
       account = widget.account;
       controller.text = dateFormatter.format(widget.account.birthday);
+      _markers = {Marker(markerId: MarkerId("location"), position: LatLng(widget.account.latitude, widget.account.longitude))};
+      target = LatLng(widget.account.latitude, widget.account.longitude);
     });
     super.initState();
+  }
+
+  void markerChangeHandler(LatLng coordinates) {
+    setState(() {
+      target = coordinates;
+      _markers = {Marker(markerId: MarkerId("location"), position: coordinates)};
+      account.latitude = coordinates.latitude;
+      account.longitude = coordinates.longitude;
+    });
   }
 
   @override
@@ -100,7 +115,10 @@ class _ProfileEditorState extends State<ProfileEditor> {
             ),
             SizedBox(height: 10),
             DropdownButtonFormField(
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => LocationPicker(target, _markers, markerChangeHandler))),
               value: account.address,
+              isExpanded: true,
+              menuMaxHeight: 300,
               decoration: dropdownDecoration.copyWith(prefixIcon: Icon(Icons.location_on_rounded)),
               items: municipalities.asMap().entries.map((filter) => DropdownMenuItem(
                 value: filter.value,

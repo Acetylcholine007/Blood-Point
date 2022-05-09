@@ -1,4 +1,7 @@
+import 'package:blood_point/components/MapDialog.dart';
+import 'package:blood_point/screens/subPages/LocationPicker.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import '../../models/AccountData.dart';
 import '../../services/AuthService.dart';
@@ -16,6 +19,8 @@ class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   final AuthService _auth = AuthService();
 
+  Set<Marker> _markers = {Marker(markerId: MarkerId("location"), position: LatLng(45.521563, -122.677433))};
+  LatLng target = const LatLng(45.521563, -122.677433);
   String email = '';
   String password = '';
   String fullName = '';
@@ -31,7 +36,15 @@ class _SignupPageState extends State<SignupPage> {
   String error = '';
   DateTime birthday;
   TextEditingController controller = TextEditingController();
-  // DateTime birthday;
+
+  GoogleMapController mapController;
+
+  void markerChangeHandler(LatLng coordinates) {
+    setState(() {
+      target = coordinates;
+      _markers = {Marker(markerId: MarkerId("location"), position: coordinates)};
+    });
+  }
 
   void submitHandler() async {
     if(_formKey.currentState.validate()) {
@@ -44,8 +57,8 @@ class _SignupPageState extends State<SignupPage> {
             contactNo: this.contactNo,
             bloodType: this.bloodType,
             isDonor: this.isDonor,
-            latitude: this.latitude,
-            longitude: this.longitude
+            latitude: this.target.latitude,
+            longitude: this.target.longitude
           ),
           email,
           password
@@ -138,6 +151,9 @@ class _SignupPageState extends State<SignupPage> {
                     ),
                     SizedBox(height: 10),
                     DropdownButtonFormField(
+                      isExpanded: true,
+                      menuMaxHeight: 300,
+                      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => LocationPicker(target, _markers, markerChangeHandler))),
                       value: address,
                       decoration: dropdownDecoration.copyWith(prefixIcon: Icon(Icons.location_on_rounded)),
                       items: municipalities.asMap().entries.map((filter) => DropdownMenuItem(
