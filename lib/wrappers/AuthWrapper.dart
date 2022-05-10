@@ -34,7 +34,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         child: MainWrapper(account: authUser),
       );
     } else {
-      return LoginPage();
+      return AuthPage();
     }
   }
 }

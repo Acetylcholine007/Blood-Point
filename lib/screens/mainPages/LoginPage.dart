@@ -59,63 +59,55 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return GestureDetector(
-      onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('FastBlood PH Login'),
-        ),
-        body: Container(
-          padding: EdgeInsets.all(16),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                TextFormField(
-                  initialValue: email,
-                  decoration: formFieldDecoration.copyWith(hintText: 'Email'),
-                  validator: (val) => val.isEmpty ? 'Enter Email' : null,
-                  onChanged: (val) => setState(() => email = val)
-                ),
-                SizedBox(height: 10),
-                TextFormField(
-                  initialValue: password,
-                  decoration: formFieldDecoration.copyWith(suffixIcon: IconButton(
-                      onPressed: () => setState(() => showPassword = !showPassword),
-                      icon: Icon(Icons.visibility)
-                  ),
-                      hintText: 'Password'
-                  ),
-                  validator: (val) => val.isEmpty ? 'Enter Password' : null,
-                  onChanged: (val) => setState(() => password = val),
-                  obscureText: showPassword,
-                ),
-                SizedBox(height: 10),
-                ElevatedButton(
-                  child: Text('LOGIN'),
-                  onPressed: submitHandler,
-                  style: formButtonDecoration,
-                ),
-                TextButton(
-                  child: Text('Forgot Password?'),
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignupPage())),
-                ),
-                Divider(
-                  thickness: 1,
-                  height: 25,
-                  color: theme.primaryColorDark,
-                ),
-                ElevatedButton(
-                  child: Text('CREATE ACCOUNT'),
-                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignupPage())),
-                  style: formButtonDecoration,
-                )
-              ],
+    return Container(
+      padding: EdgeInsets.all(16),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextFormField(
+              initialValue: email,
+              decoration: formFieldDecoration.copyWith(hintText: 'Email'),
+              validator: (val) => val.isEmpty ? 'Enter Email' : null,
+              onChanged: (val) => setState(() => email = val)
             ),
-          )
+            SizedBox(height: 10),
+            TextFormField(
+              initialValue: password,
+              decoration: formFieldDecoration.copyWith(suffixIcon: IconButton(
+                  onPressed: () => setState(() => showPassword = !showPassword),
+                  icon: Icon(Icons.visibility)
+              ),
+                  hintText: 'Password'
+              ),
+              validator: (val) => val.isEmpty ? 'Enter Password' : null,
+              onChanged: (val) => setState(() => password = val),
+              obscureText: showPassword,
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              child: Text('LOGIN'),
+              onPressed: submitHandler,
+              style: formButtonDecoration,
+            ),
+            TextButton(
+              child: Text('Forgot Password?'),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignupPage())),
+            ),
+            Divider(
+              thickness: 1,
+              height: 25,
+              color: theme.primaryColorDark,
+            ),
+            ElevatedButton(
+              child: Text('CREATE ACCOUNT'),
+              onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignupPage())),
+              style: formButtonDecoration,
+            )
+          ],
         ),
-      ),
+      )
     );
   }
 }
