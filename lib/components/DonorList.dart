@@ -5,8 +5,9 @@ import 'package:flutter/material.dart';
 
 class DonorList extends StatelessWidget {
   final List<AccountData> accounts;
+  final AccountData myAccount;
 
-  const DonorList(this.accounts, {Key key}) : super(key: key);
+  const DonorList(this.accounts, this.myAccount, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class DonorList extends StatelessWidget {
           return GestureDetector(
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ProfileViewer(accounts[index])),
+              MaterialPageRoute(builder: (context) => ProfileViewer(accounts[index], myAccount)),
             ),
             child: Card(
               child: ListTile(

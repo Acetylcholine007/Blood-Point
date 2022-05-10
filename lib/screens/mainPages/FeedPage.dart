@@ -70,7 +70,7 @@ class _FeedPageState extends State<FeedPage> {
                             return GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => RequestViewer(requests[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType)),
+                                MaterialPageRoute(builder: (context) => RequestViewer(requests[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account)),
                               ),
                               child: RequestTile(requests[index], account: snapshot.data),
                             );
@@ -91,7 +91,7 @@ class _FeedPageState extends State<FeedPage> {
                             return GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => RequestViewer(myRequest[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType)),
+                                MaterialPageRoute(builder: (context) => RequestViewer(myRequest[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account)),
                               ),
                               child: RequestTile(myRequest[index], account: snapshot.data),
                             );
@@ -112,7 +112,7 @@ class _FeedPageState extends State<FeedPage> {
                             return GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => RequestViewer(myDonations[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType)),
+                                MaterialPageRoute(builder: (context) => RequestViewer(myDonations[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account, isDonation: true)),
                               ),
                               child: RequestTile(myDonations[index], account: snapshot.data),
                             );

@@ -1,13 +1,13 @@
 import 'package:blood_point/models/AccountData.dart';
 import 'package:blood_point/screens/subPages/ProfileViewer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class DonorMap extends StatefulWidget {
   final List<AccountData> accounts;
+  final AccountData myAccount;
 
-  const DonorMap(this.accounts, {Key key}) : super(key: key);
+  const DonorMap(this.accounts, this.myAccount, {Key key}) : super(key: key);
 
   @override
   State<DonorMap> createState() => _DonorMapState();
@@ -26,7 +26,7 @@ class _DonorMapState extends State<DonorMap> {
         infoWindow: InfoWindow(
           title: account.fullName,
           snippet: '${account.bloodType} blood type',
-          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileViewer(account)))
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => ProfileViewer(account, widget.myAccount)))
         ),
       )).toSet();
     });

@@ -1,10 +1,15 @@
 import 'package:blood_point/models/AccountData.dart';
+import 'package:blood_point/shared/decorations.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+import 'MapPage.dart';
 
 class ProfileViewer extends StatelessWidget {
   final AccountData account;
+  final AccountData myAccount;
 
-  const ProfileViewer(this.account, {Key key}) : super(key: key);
+  const ProfileViewer(this.account, this.myAccount, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +78,21 @@ class ProfileViewer extends StatelessWidget {
               title: Text('Blood Type'),
               subtitle: Text(account.bloodType),
             ),
-            Divider()
+            Divider(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton(
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => MapPage(
+                      LatLng(myAccount.latitude, myAccount.longitude),
+                      LatLng(account.latitude, account.longitude)
+                  )),
+                ),
+                child: Text('View Location on Maps'),
+                style: formButtonDecoration,
+              ),
+            )
           ],
         ),
       ),

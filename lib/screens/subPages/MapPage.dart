@@ -1,9 +1,12 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapPage extends StatefulWidget {
+  final LatLng origin;
+  final LatLng destination;
+
+  const MapPage(this.origin, this.destination, {Key key}) : super(key: key);
+
   @override
   State<MapPage> createState() => _MapPageState();
 }
@@ -11,11 +14,20 @@ class MapPage extends StatefulWidget {
 class _MapPageState extends State<MapPage> {
   GoogleMapController mapController;
   MapType _currentMapType = MapType.normal;
-  Set<Marker> _markers = {Marker(markerId: MarkerId("1"), position: LatLng(45.521563, -122.677433))};
-  final LatLng _center = const LatLng(45.521563, -122.677433);
-  LatLng _lastMapPosition = LatLng(45.521563, -122.677433);
+  Set<Marker> _markers;
+  LatLng _center;
+  LatLng _lastMapPosition;
 
-
+  @override
+  void initState() {
+    _markers = {
+      Marker(markerId: MarkerId("origin"), position: widget.origin, infoWindow: InfoWindow(title: 'Your Location')),
+      Marker(markerId: MarkerId("destination"), position: widget.destination, infoWindow: InfoWindow(title: 'Target Location'))
+    };
+    _center = widget.origin;
+    _lastMapPosition = widget.origin;
+    super.initState();
+  }
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;

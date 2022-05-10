@@ -50,8 +50,8 @@ class _DonorPageState extends State<DonorPage> {
         ),
         body: TabBarView(
           children: [
-            DonorList(accounts),
-            DonorMap(accounts)
+            DonorList(accounts, account),
+            DonorMap(accounts, account)
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:blood_point/models/AccountData.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../models/Request.dart';
@@ -9,8 +10,9 @@ import '../shared/constants.dart';
 class RequestTile extends StatelessWidget {
   final Request request;
   final AccountData account;
+  final AccountData myAccount;
 
-  const RequestTile(this.request, {Key key, this.account}) : super(key: key);
+  const RequestTile(this.request, {Key key, this.account, this.myAccount}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,10 @@ class RequestTile extends StatelessWidget {
               children: [
                 TextButton.icon(onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MapPage()),
+                  MaterialPageRoute(builder: (context) => MapPage(
+                      LatLng(myAccount.latitude, myAccount.longitude),
+                      LatLng(account.latitude, account.longitude)
+                  )),
                 ), icon: Icon(Icons.location_on_rounded), label: Text(account.address, overflow: TextOverflow.ellipsis)),
                 TextButton.icon(onPressed: () => launch("tel://${account.contactNo}"), icon: Icon(Icons.phone_rounded), label: Text(account.contactNo))
               ],

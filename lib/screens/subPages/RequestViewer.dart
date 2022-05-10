@@ -5,8 +5,10 @@ import 'package:blood_point/screens/subPages/ProfileViewer.dart';
 import 'package:blood_point/screens/subPages/RequestEditor.dart';
 import 'package:blood_point/shared/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../components/DonationGuide.dart';
 import '../../models/AccountData.dart';
 import '../../services/DatabaseService.dart';
 
@@ -15,8 +17,10 @@ class RequestViewer extends StatefulWidget {
   final AccountData account;
   final String myUid;
   final String myBloodType;
+  final AccountData myAccount;
+  final bool isDonation;
 
-  const RequestViewer(this.request, {Key key, this.account, this.myUid, this.myBloodType}) : super(key: key);
+  const RequestViewer(this.request, {Key key, this.isDonation = false, this.account, this.myUid, this.myBloodType, this.myAccount}) : super(key: key);
 
   @override
   _RequestViewerState createState() => _RequestViewerState();
@@ -199,8 +203,8 @@ class _RequestViewerState extends State<RequestViewer> {
       ),
       body: Container(
         padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        child: ListView(
+          // crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(child: CircleAvatar(child: Icon(Icons.person_rounded, size: 40), radius: 40)),
             Center(
@@ -235,7 +239,10 @@ class _RequestViewerState extends State<RequestViewer> {
                 flex: 1,
                 child: ElevatedButton.icon(onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => MapPage()),
+                  MaterialPageRoute(builder: (context) => MapPage(
+                    LatLng(widget.myAccount.latitude, widget.myAccount.longitude),
+                    LatLng(widget.account.latitude, widget.account.longitude)
+                  )),
                 ), icon:  Icon(Icons.location_on_rounded), label: Text('Find')),
               ),
               SizedBox(width: 10),
@@ -246,64 +253,67 @@ class _RequestViewerState extends State<RequestViewer> {
             SizedBox(height: 10),
             Text(request.message, style: theme.textTheme.bodyText2, maxLines: 3, overflow: TextOverflow.ellipsis),
             Divider(height: 25, color: theme.primaryColorDark),
-            Text('Willing Donors', style: theme.textTheme.headline5),
-            SizedBox(height: 10),
-            Expanded(
-                flex: 1,
-                child: request.donorIds.isNotEmpty ? ListView.builder(
-                  itemCount: request.donorIds.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    return FutureBuilder<AccountData>(
-                        future: DatabaseService.db.getAccount(request.donorIds[index]),
-                        builder: (context, snapshot) {
-                          if(snapshot.connectionState == ConnectionState.done) {
-                            return GestureDetector(
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => ProfileViewer(snapshot.data)),
-                              ),
-                              child: Card(
+            Text(widget.isDonation ? 'Donation Guide' : 'Willing Donors', style: theme.textTheme.headline5),
+            // widget.isDonation ? null : SizedBox(height: 10),
+            widget.isDonation ? DonationGuide() :Padding(
+              padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+              child: SizedBox(
+                  height: 180,
+                  child: request.donorIds.isNotEmpty ? ListView.builder(
+                    itemCount: request.donorIds.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return FutureBuilder<AccountData>(
+                          future: DatabaseService.db.getAccount(request.donorIds[index]),
+                          builder: (context, snapshot) {
+                            if(snapshot.connectionState == ConnectionState.done) {
+                              return GestureDetector(
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => ProfileViewer(snapshot.data, widget.myAccount)),
+                                ),
+                                child: Card(
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      child: Text('${index + 1}', style: theme.textTheme.headline6.copyWith(color: Colors.white)),
+                                      backgroundColor: theme.primaryColor,
+                                    ),
+                                    title: Text(snapshot.data.fullName),
+                                    subtitle: Text(snapshot.data.email),
+                                    trailing: request.uid == widget.myUid ? IconButton(
+                                      onPressed: () => setDonorHandler(snapshot.data.uid),
+                                      icon: snapshot.data.uid == request.finalDonor ? Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank_rounded),
+                                    ) : null,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              return Card(
                                 child: ListTile(
                                   leading: CircleAvatar(
                                     child: Text('${index + 1}', style: theme.textTheme.headline6.copyWith(color: Colors.white)),
                                     backgroundColor: theme.primaryColor,
                                   ),
-                                  title: Text(snapshot.data.fullName),
-                                  subtitle: Text(snapshot.data.email),
-                                  trailing: request.uid == widget.myUid ? IconButton(
-                                    onPressed: () => setDonorHandler(snapshot.data.uid),
-                                    icon: snapshot.data.uid == request.finalDonor ? Icon(Icons.check_box_outlined):Icon(Icons.check_box_outline_blank_rounded),
-                                  ) : null,
+                                  title: LinearProgressIndicator(),
+                                  subtitle: LinearProgressIndicator(),
                                 ),
-                              ),
-                            );
-                          } else {
-                            return Card(
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  child: Text('${index + 1}', style: theme.textTheme.headline6.copyWith(color: Colors.white)),
-                                  backgroundColor: theme.primaryColor,
-                                ),
-                                title: LinearProgressIndicator(),
-                                subtitle: LinearProgressIndicator(),
-                              ),
-                            );
+                              );
+                            }
                           }
-                        }
-                    );
-                  }
-                ) : Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 1,
-                      color: theme.primaryColorDark
+                      );
+                    }
+                  ) : Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        width: 1,
+                        color: theme.primaryColorDark
+                      ),
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(20.0)
+                      ),
                     ),
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(20.0)
-                    ),
-                  ),
-                    child: NoData('No willing donors yet', Icons.bloodtype_rounded)
-                )
+                      child: NoData('No willing donors yet', Icons.bloodtype_rounded)
+                  )
+              ),
             ),
           ],
         ),
