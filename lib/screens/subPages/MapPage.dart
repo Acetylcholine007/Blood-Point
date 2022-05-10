@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapPage extends StatefulWidget {
@@ -18,6 +19,52 @@ class _MapPageState extends State<MapPage> {
   LatLng _center;
   LatLng _lastMapPosition;
 
+  PolylinePoints polylinePoints;
+  List<LatLng> polylineCoordinates = [];
+  Map<PolylineId, Polyline> polylines = {};
+
+  _createPolylines(
+      double startLatitude,
+      double startLongitude,
+      double destinationLatitude,
+      double destinationLongitude,
+      ) async {
+    print('>>>>>>>>>>');
+    // Initializing PolylinePoints
+    polylinePoints = PolylinePoints();
+
+    // Generating the list of coordinates to be used for
+    // drawing the polylines
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      'AIzaSyCie0su-nQNtpf1AjICJueGkOGIpVsZz7Y', // Google Maps API Key
+      PointLatLng(startLatitude, startLongitude),
+      PointLatLng(destinationLatitude, destinationLongitude),
+      travelMode: TravelMode.transit,
+    );
+
+    // Adding the coordinates to the list
+    if (result.points.isNotEmpty) {
+      result.points.forEach((PointLatLng point) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      });
+    }
+
+    // Defining an ID
+    PolylineId id = PolylineId('poly');
+
+    // Initializing Polyline
+    Polyline polyline = Polyline(
+      polylineId: id,
+      color: Colors.red,
+      points: polylineCoordinates,
+      width: 3,
+    );
+
+    // Adding the polyline to the map
+    polylines[id] = polyline;
+    print('>>>>>>> ${result.status}' );
+  }
+
   @override
   void initState() {
     _markers = {
@@ -26,6 +73,8 @@ class _MapPageState extends State<MapPage> {
     };
     _center = widget.origin;
     _lastMapPosition = widget.origin;
+    print('???????');
+    _createPolylines(widget.origin.latitude, widget.origin.longitude, widget.destination.latitude, widget.destination.longitude);
     super.initState();
   }
 
@@ -61,6 +110,7 @@ class _MapPageState extends State<MapPage> {
         onMapCreated: _onMapCreated,
         markers: _markers,
         onCameraMove: _onCameraMove,
+        polylines: Set<Polyline>.of(polylines.values),
         initialCameraPosition: CameraPosition(
           target: _center,
           zoom: 11.0,

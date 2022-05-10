@@ -72,10 +72,10 @@ class _FeedPageState extends State<FeedPage> {
                                 context,
                                 MaterialPageRoute(builder: (context) => RequestViewer(requests[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account)),
                               ),
-                              child: RequestTile(requests[index], account: snapshot.data),
+                              child: RequestTile(requests[index], account: snapshot.data, myAccount: account),
                             );
                           } else {
-                            return RequestTile(requests[index]);
+                            return RequestTile(requests[index], myAccount: account);
                           }
                         }
                     );
@@ -93,10 +93,10 @@ class _FeedPageState extends State<FeedPage> {
                                 context,
                                 MaterialPageRoute(builder: (context) => RequestViewer(myRequest[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account)),
                               ),
-                              child: RequestTile(myRequest[index], account: snapshot.data),
+                              child: RequestTile(myRequest[index], account: snapshot.data, myAccount: account),
                             );
                           } else {
-                            return RequestTile(myRequest[index]);
+                            return RequestTile(myRequest[index], myAccount: account);
                           }
                         }
                     );
@@ -114,10 +114,10 @@ class _FeedPageState extends State<FeedPage> {
                                 context,
                                 MaterialPageRoute(builder: (context) => RequestViewer(myDonations[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account, isDonation: true)),
                               ),
-                              child: RequestTile(myDonations[index], account: snapshot.data),
+                              child: RequestTile(myDonations[index], account: snapshot.data, myAccount: account),
                             );
                           } else {
-                            return RequestTile(myDonations[index]);
+                            return RequestTile(myDonations[index], myAccount: account);
                           }
                         }
                     );

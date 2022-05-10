@@ -1,6 +1,5 @@
 import 'package:blood_point/screens/mainPages/LoginPage.dart';
 import 'package:blood_point/screens/mainPages/SignupPage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AuthPage extends StatefulWidget {
