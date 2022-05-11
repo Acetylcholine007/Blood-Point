@@ -1,4 +1,5 @@
 import 'package:badges/badges.dart';
+import 'package:blood_point/components/DonationPreparation.dart';
 import 'package:blood_point/components/Loading.dart';
 import 'package:blood_point/components/NoData.dart';
 import 'package:blood_point/models/Account.dart';
@@ -142,7 +143,7 @@ class _MainWrapperState extends State<MainWrapper> {
                             context: context,
                             builder: (context) => AlertDialog(
                               title: Text(notifications[index].heading),
-                              content: Text(notifications[index].body),
+                              content: notifications[index].heading.startsWith('Preparation') ? DonationPreparation() : Text(notifications[index].body),
                               actions: [
                                 TextButton(
                                     onPressed: () => deleteHandler(notifications[index].nid),

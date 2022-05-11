@@ -41,31 +41,74 @@ class _RequestViewerState extends State<RequestViewer> {
 
   void donateHandler() async {
     if(widget.request.bloodType == widget.myBloodType) {
-      List<String> donorIds = request.donorIds;
       if(!isDonor()) {
-        donorIds.add(widget.myUid);
+        showDialog(context: context, builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Offer Blood Donation'),
+            content: DonationGuide(),
+            actions: [
+              TextButton(onPressed: () async {
+                Navigator.of(context).pop();
+                List<String> donorIds = request.donorIds;
+                if(!isDonor()) {
+                  donorIds.add(widget.myUid);
+                } else {
+                  donorIds.remove(widget.myUid);
+                }
+                String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid, widget.request.uid);
+                if(result == 'SUCCESS') {
+                  setState(() => request.donorIds = donorIds);
+                } else {
+                  showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text(isDonor() ? 'Retract Donation Offer' : 'File Donation Offer'),
+                        content: Text(result),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text('OK')
+                          )
+                        ],
+                      )
+                  );
+                }
+              }, child: Text('Confirm Offer')),
+              TextButton(onPressed: () async {
+                Navigator.of(context).pop();
+              }, child: Text('Cancel'))
+            ],
+          );
+        });
       } else {
-        donorIds.remove(widget.myUid);
-      }
-      String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid, widget.request.uid);
-      if(result == 'SUCCESS') {
-        setState(() => request.donorIds = donorIds);
-      } else {
-        showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text(isDonor() ? 'Retract Donation Offer' : 'File Donation Offer'),
-              content: Text(result),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('OK')
-                )
-              ],
-            )
-        );
+        List<String> donorIds = request.donorIds;
+        if(!isDonor()) {
+          donorIds.add(widget.myUid);
+        } else {
+          donorIds.remove(widget.myUid);
+        }
+        String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid, widget.request.uid);
+        if(result == 'SUCCESS') {
+          setState(() => request.donorIds = donorIds);
+        } else {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text(isDonor() ? 'Retract Donation Offer' : 'File Donation Offer'),
+                content: Text(result),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text('OK')
+                  )
+                ],
+              )
+          );
+        }
       }
     } else {
       showDialog(
@@ -142,7 +185,7 @@ class _RequestViewerState extends State<RequestViewer> {
     }
   }
 
-  void deleteHandler() async {
+  void deleteHandler(BuildContext pageContext) async {
     showDialog(context: context, builder: (BuildContext context) {
       return AlertDialog(
         title: Text('Remove Request'),
@@ -152,7 +195,7 @@ class _RequestViewerState extends State<RequestViewer> {
             Navigator.of(context).pop();
             String result = await DatabaseService.db.removeRequest(request.rid, widget.myUid);
             if(result == 'SUCCESS') {
-              Navigator.pop(context);
+              Navigator.of(pageContext).pop();
             } else {
               showDialog(
                   context: context,
@@ -192,12 +235,12 @@ class _RequestViewerState extends State<RequestViewer> {
             MaterialPageRoute(builder: (context) => RequestEditor(isNew: false, request: request, uid: widget.myUid)),
           ), icon: Icon(Icons.edit)),
           // IconButton(onPressed: terminateHandler, icon: Icon(Icons.cancel_rounded)),
-          IconButton(onPressed: deleteHandler, icon: Icon(Icons.delete_rounded)),
+          IconButton(onPressed: () => deleteHandler(context), icon: Icon(Icons.delete_rounded)),
         ] : [
-          ElevatedButton.icon(
-            icon: isDonor() ? Icon(Icons.cancel_rounded) : Icon(Icons.volunteer_activism),
+          TextButton.icon(
+            icon: isDonor() ? Icon(Icons.cancel_rounded, color: Colors.white) : Icon(Icons.volunteer_activism),
             onPressed: donateHandler,
-            label: Text(isDonor() ? 'Retract Offer' : 'Offer Donation'),
+            label: Text(isDonor() ? 'Retract Offer' : 'Offer Donation', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),

@@ -52,7 +52,8 @@ class _RequestEditorState extends State<RequestEditor> {
           uid: widget.uid,
           message: this.message,
           bloodType: this.bloodType,
-          datetime: DateTime.now()
+          datetime: DateTime.now(),
+          deadline: deadline
         );
         result = await DatabaseService.db.addRequest(request, widget.uid);
       } else {
@@ -63,7 +64,8 @@ class _RequestEditorState extends State<RequestEditor> {
           bloodType: this.bloodType,
           donorIds: this.donorIds,
           isComplete: this.isComplete,
-          datetime: widget.request.datetime
+          datetime: widget.request.datetime,
+          deadline: deadline
         );
         result = await DatabaseService.db.editRequest(request, widget.uid);
       }

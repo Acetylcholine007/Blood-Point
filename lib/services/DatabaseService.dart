@@ -248,6 +248,7 @@ class DatabaseService {
       if(donorIds.contains(uid)) {
         await addHistory(History(uid: uid, heading: 'Donation Offer', body: 'You\'ve offer your blood donation to a request with rid=$rid'));
         await addNotification(AppNotification(uid: ownerUid, heading: 'Donation Offer', body: 'A user with uid=$uid offers to donate blood for your request'));
+        await addNotification(AppNotification(uid: uid, heading: 'Preparation Before Blood Donation', body: 'Here is the guide before blood donation'));
       } else {
         await addHistory(History(uid: uid, heading: 'Donation Retraction', body: 'You\'ve pulled out your blood donation offer to a request with rid=$rid'));
         await addNotification(AppNotification(uid: ownerUid, heading: 'Donation Retraction', body: 'A user with uid=$uid pulled out donation offer for your request'));

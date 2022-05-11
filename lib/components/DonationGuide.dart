@@ -8,22 +8,34 @@ class DonationGuide extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Text('Basic requirements of a potential blood donor:', style: theme.textTheme.headline6.copyWith(fontWeight: FontWeight.normal)),
+        SizedBox(height: 10),
+        Text('Basic requirements for a potential blood donor:', style: theme.textTheme.headline6.copyWith(fontWeight: FontWeight.normal)),
         ListTile(
-          title: Text('•	Weight: At least 110 lbs (50 kg).'),
+          minLeadingWidth : 0,
+          leading: CircleAvatar(child: Text('1'), radius: 12),
+          title: Text('Weight: At least 110 lbs (50 kg).'),
         ),
         ListTile(
-          title: Text('•	Blood volume collected will depend mainly on you body weight.'),
+          minLeadingWidth : 0,
+          leading: CircleAvatar(child: Text('2'), radius: 12),
+          title: Text('Blood volume collected will depend mainly on you body weight.'),
         ),
         ListTile(
-          title: Text('•	Pulse rate: Between 60 and 100 beats/minute with regular rhythm.'),
+          minLeadingWidth : 0,
+          leading: CircleAvatar(child: Text('3'), radius: 12),
+          title: Text('Pulse rate: Between 60 and 100 beats/minute with regular rhythm.'),
         ),
         ListTile(
-          title: Text('•	Blood pressure: Between 90 and 160 systolic and 60 and 100 diastolic.'),
+          minLeadingWidth : 0,
+          leading: CircleAvatar(child: Text('4'), radius: 12),
+          title: Text('Blood pressure: Between 90 and 160 systolic and 60 and 100 diastolic.'),
         ),
         ListTile(
-          title: Text('•	Hemoglobin: At least 125 g/L.'),
+          minLeadingWidth : 0,
+          leading: CircleAvatar(child: Text('5'), radius: 12),
+          title: Text('Hemoglobin: At least 125 g/L.'),
         ),
         Text('Source: National Voluntary Blood Services Program (NVBSP)', style: theme.textTheme.caption)
       ],
