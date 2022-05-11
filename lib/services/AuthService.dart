@@ -29,7 +29,7 @@ class AuthService {
 
   Future<String> signInEmail(String email, String password) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      await _auth.signInWithEmailAndPassword(email: email.trim(), password: password);
       if(!_auth.currentUser.emailVerified) {
         String result = await resendVerification(_auth.currentUser);
         return result == 'SUCCESS' ? 'Email is not yet verified. Verification email has been re-sent.' : result;
@@ -42,12 +42,13 @@ class AuthService {
 
   Future<String> register(AccountData accountData, String email, String password) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+      UserCredential result = await _auth.createUserWithEmailAndPassword(email: email.trim(), password: password);
       User user = result.user;
 
-      await DatabaseService.db.createAccount(accountData, user.email, user.uid);
-      user.sendEmailVerification();
-
+      await DatabaseService.db.createAccount(accountData, user.uid);
+      await user.sendEmailVerification();
+      await _auth.currentUser.reload();
+      await _auth.signOut();
       return 'SUCCESS';
     } on FirebaseAuthException catch (error) {
       return error.message;

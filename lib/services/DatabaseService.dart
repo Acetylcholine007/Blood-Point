@@ -297,7 +297,7 @@ class DatabaseService {
     }
   }
 
-  Future createAccount(AccountData account, String email, String uid) async {
+  Future createAccount(AccountData account, String uid) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
       await userCollection.doc(uid).set(account.toMap());

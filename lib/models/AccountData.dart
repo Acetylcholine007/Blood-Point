@@ -28,7 +28,7 @@ class AccountData {
     this.longitude,
     this.isDonor,
     this.bloodType,
-    this.newNotifs,
+    this.newNotifs = 0,
     this.birthday
   });
 
@@ -45,7 +45,7 @@ class AccountData {
       'bloodType': this.bloodType,
       'newNotifs': this.newNotifs,
       'birthday': Timestamp.fromDate(this.birthday),
-      'email': this.email
+      'email': this.email.trim()
     };
   }
 

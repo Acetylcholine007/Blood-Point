@@ -29,14 +29,13 @@ class _MapPageState extends State<MapPage> {
       double destinationLatitude,
       double destinationLongitude,
       ) async {
-    print('>>>>>>>>>>');
     // Initializing PolylinePoints
     polylinePoints = PolylinePoints();
 
     // Generating the list of coordinates to be used for
     // drawing the polylines
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      'AIzaSyCie0su-nQNtpf1AjICJueGkOGIpVsZz7Y', // Google Maps API Key
+      'AIzaSyBrSj_sDdt92KatUAiuDpo1Fjk04Ms0ffY', // Google Maps API Key
       PointLatLng(startLatitude, startLongitude),
       PointLatLng(destinationLatitude, destinationLongitude),
       travelMode: TravelMode.transit,
@@ -62,7 +61,6 @@ class _MapPageState extends State<MapPage> {
 
     // Adding the polyline to the map
     polylines[id] = polyline;
-    print('>>>>>>> ${result.status}' );
   }
 
   @override
@@ -73,7 +71,6 @@ class _MapPageState extends State<MapPage> {
     };
     _center = widget.origin;
     _lastMapPosition = widget.origin;
-    print('???????');
     _createPolylines(widget.origin.latitude, widget.origin.longitude, widget.destination.latitude, widget.destination.longitude);
     super.initState();
   }

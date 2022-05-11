@@ -57,7 +57,9 @@ class _SignupPageState extends State<SignupPage> {
           bloodType: this.bloodType,
           isDonor: this.isDonor,
           latitude: this.target.latitude,
-          longitude: this.target.longitude
+          longitude: this.target.longitude,
+          birthday: this.birthday,
+          email: this.email
         ),
         email,
         password
@@ -231,10 +233,6 @@ class _SignupPageState extends State<SignupPage> {
                 child: Text('SIGN UP'),
                 onPressed: submitHandler,
                 style: formButtonDecoration,
-              ),
-              TextButton(
-                child: Text('Already have account? Sign in'),
-                onPressed: () => Navigator.pop(context)
               )
             ],
           ),
