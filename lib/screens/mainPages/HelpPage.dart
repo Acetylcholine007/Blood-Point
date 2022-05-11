@@ -13,7 +13,44 @@ class HelpPage extends StatelessWidget {
         children: [
           Text('Blood Donation Procedures', style: theme.textTheme.headline5),
           Divider(height: 25, color: theme.primaryColorDark),
-          Text('Before', style: theme.textTheme.headline6),
+          Text('Basic requirements of a potential blood donor:', style: theme.textTheme.headline6),
+          ListTile(
+            leading: CircleAvatar(
+              radius: 16,
+              child: Text('1'),
+            ),
+            title: Text('Weight: At least 110 lbs (50 kg).'),
+          ),
+          ListTile(
+            leading: CircleAvatar(
+              radius: 16,
+              child: Text('2'),
+            ),
+            title: Text('Blood volume collected will depend mainly on you body weight.'),
+          ),
+          ListTile(
+            leading: CircleAvatar(
+              radius: 16,
+              child: Text('3'),
+            ),
+            title: Text('Pulse rate: Between 60 and 100 beats/minute with regular rhythm.'),
+          ),
+          ListTile(
+            leading: CircleAvatar(
+              radius: 16,
+              child: Text('4'),
+            ),
+            title: Text('Blood pressure: Between 90 and 160 systolic and 60 and 100 diastolic.'),
+          ),
+          ListTile(
+            leading: CircleAvatar(
+              radius: 16,
+              child: Text('5'),
+            ),
+            title: Text('Hemoglobin: At least 125 g/L.'),
+          ),
+          Divider(height: 25, color: theme.primaryColorDark),
+          Text('Before Donation', style: theme.textTheme.headline6),
           ListTile(
             leading: CircleAvatar(
               radius: 16,
@@ -39,7 +76,7 @@ class HelpPage extends StatelessWidget {
             subtitle: Text('Get a good night\'s sleep the night before your donation, eat healthy foods and drink extra liquids.'),
           ),
           Divider(height: 25, color: theme.primaryColorDark),
-          Text('During', style: theme.textTheme.headline6),
+          Text('During Donation', style: theme.textTheme.headline6),
           ListTile(
             leading: CircleAvatar(
               radius: 16,
@@ -101,7 +138,7 @@ class HelpPage extends StatelessWidget {
             title: Text('After the blood bag is full, the donors must rest 5 to 10 minutes.'),
           ),
           Divider(height: 25, color: theme.primaryColorDark),
-          Text('After', style: theme.textTheme.headline6),
+          Text('After Donation', style: theme.textTheme.headline6),
           ListTile(
             leading: CircleAvatar(
               radius: 16,
@@ -124,6 +161,7 @@ class HelpPage extends StatelessWidget {
           ),
           Divider(height: 25, color: theme.primaryColorDark),
           Text('Source:', style: theme.textTheme.subtitle2.copyWith(fontStyle: FontStyle.italic)),
+          Text('National Voluntary Blood Services Program (NVBSP)', style: theme.textTheme.caption.copyWith(fontStyle: FontStyle.italic)),
           Text('https://www.redcrossblood.org/donate-blood/blood-donation-process/before-during-after.html', style: theme.textTheme.caption.copyWith(fontStyle: FontStyle.italic)),
           Text('https://www.mayoclinic.org/tests-procedures/blood-donation/about/pac-20385144', style: theme.textTheme.caption.copyWith(fontStyle: FontStyle.italic)),
         ],
