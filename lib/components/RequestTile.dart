@@ -11,8 +11,9 @@ class RequestTile extends StatelessWidget {
   final Request request;
   final AccountData account;
   final AccountData myAccount;
+  final bool forDonation;
 
-  const RequestTile(this.request, {Key key, this.account, this.myAccount}) : super(key: key);
+  const RequestTile(this.request, {Key key, this.account, this.myAccount, this.forDonation = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +34,8 @@ class RequestTile extends StatelessWidget {
             Text('Looking for: ${request.bloodType} Blood Type Donor', style: theme.textTheme.bodyText1),
             SizedBox(height: 10),
             Text('Deadline: ${dateFormatter.format(request.deadline)}', style: theme.textTheme.bodyText1),
+            SizedBox(height: 10),
+            forDonation ? Text('Status: ${request.finalDonor == "" ? "No chosen donor yet" :request.finalDonor == myAccount.uid ? 'You\'re chosen as the donor' : 'Seeker had chosen a different donor'}', style: theme.textTheme.bodyText1) : SizedBox.shrink(),
             Divider(color: theme.primaryColorDark),
             account == null ? LinearProgressIndicator() : Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

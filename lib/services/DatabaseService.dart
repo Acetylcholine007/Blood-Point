@@ -4,6 +4,7 @@ import 'package:blood_point/models/AccountData.dart';
 import 'package:blood_point/models/GetRequestResponse.dart';
 import 'package:blood_point/models/History.dart';
 import 'package:blood_point/models/Request.dart';
+import 'package:blood_point/shared/constants.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -118,11 +119,11 @@ class DatabaseService {
   }
 
   // OPERATOR FUNCTIONS SECTION
-  Future removeRequest(String rid, String uid) async {
+  Future removeRequest(String rid, String uid, String bloodType) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
       await requestCollection.doc(rid).delete();
-      await addHistory(History(uid: uid, heading: 'Request Removal', body: 'You\ve removed your blood request with rid=$rid'));
+      await addHistory(History(uid: uid, heading: 'Request Deletion', body: 'You\ve removed your blood request for blood type ${bloodType}'));
       result = 'SUCCESS';
       return result;
     } catch (e) {
@@ -136,7 +137,7 @@ class DatabaseService {
 
     try {
       await requestCollection.add(request.toMap());
-      await addHistory(History(uid: uid, heading: 'Request Creation', body: 'You\'ve created a blood request with blood type of ${request.bloodType}'));
+      await addHistory(History(uid: uid, heading: 'Request Creation', body: 'You\'ve created a blood request for blood type ${request.bloodType}'));
       result = 'SUCCESS';
       return result;
     } catch (e) {
@@ -149,7 +150,7 @@ class DatabaseService {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
       await requestCollection.doc(request.rid).update(request.toMap());
-      await addHistory(History(uid: uid, heading: 'Request Editing', body: 'You\'ve edited your blood request with rid=${request.rid}'));
+      await addHistory(History(uid: uid, heading: 'Request Editing', body: 'You\'ve edited your blood request for blood type ${request.bloodType}'));
       result = 'SUCCESS';
       return result;
     } catch (e) {
@@ -241,17 +242,17 @@ class DatabaseService {
     }
   }
 
-  Future<String> updateDonor(String rid, List<String> donorIds, String uid, String ownerUid) async {
+  Future<String> updateDonor(String rid, List<String> donorIds, String uid, String ownerUid, String seekerName, String donorName) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
       await requestCollection.doc(rid).update({'donorIds': donorIds});
       if(donorIds.contains(uid)) {
-        await addHistory(History(uid: uid, heading: 'Donation Offer', body: 'You\'ve offer your blood donation to a request with rid=$rid'));
-        await addNotification(AppNotification(uid: ownerUid, heading: 'Donation Offer', body: 'A user with uid=$uid offers to donate blood for your request'));
+        await addHistory(History(uid: uid, heading: 'Donation Offer', body: 'You\'ve offer your blood donation to a request created by ${seekerName}'));
+        await addNotification(AppNotification(uid: ownerUid, heading: 'Donation Offer', body: '${donorName} offers to donate blood for your request'));
         await addNotification(AppNotification(uid: uid, heading: 'Preparation Before Blood Donation', body: 'Here is the guide before blood donation'));
       } else {
-        await addHistory(History(uid: uid, heading: 'Donation Retraction', body: 'You\'ve pulled out your blood donation offer to a request with rid=$rid'));
-        await addNotification(AppNotification(uid: ownerUid, heading: 'Donation Retraction', body: 'A user with uid=$uid pulled out donation offer for your request'));
+        await addHistory(History(uid: uid, heading: 'Donation Retraction', body: 'You\'ve pulled out your blood donation offer to a request created by ${seekerName}'));
+        await addNotification(AppNotification(uid: ownerUid, heading: 'Donation Retraction', body: '${donorName} pulled out donation offer for your request'));
       }
       result = 'SUCCESS';
       return result;
@@ -261,14 +262,14 @@ class DatabaseService {
     }
   }
 
-  Future<String> setFinalDonor(String rid, String finalDonor, String uid, String lastDonor) async {
+  Future<String> setFinalDonor(String rid, String finalDonor, String uid, String lastDonor,String seekerName, String donorName) async {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
       await requestCollection.doc(rid).update({'finalDonor': finalDonor});
-      await addHistory(History(uid: uid, heading: 'Donor Selection', body: 'You\'ve chosen a user with uid=$rid as the blood donor'));
-      await addNotification(AppNotification(uid: finalDonor, heading: 'Donation Selection', body: 'The seeker with uid=$uid chose you as the donor'));
+      await addHistory(History(uid: uid, heading: 'Donor Selection', body: 'You\'ve chosen $donorName as the blood donor'));
+      await addNotification(AppNotification(uid: finalDonor, heading: 'Donation Selection', body: '$seekerName chose you as the donor'));
       if(lastDonor != "") {
-        await addNotification(AppNotification(uid: lastDonor, heading: 'Donation Selection', body: 'You are no longer chosen as donor as the seeker with uid=$uid chose a different donor'));
+        await addNotification(AppNotification(uid: lastDonor, heading: 'Donation Selection', body: 'You are no longer the chosen donor for $seekerName'));
       }
       result = 'SUCCESS';
       return result;
@@ -302,7 +303,7 @@ class DatabaseService {
     String result = 'Operation Timeout: Quota was probably reached. Try again the following day.';
     try {
       await userCollection.doc(uid).set(account.toMap());
-      await addHistory(History(uid: uid, heading: 'Account Creation', body: 'You\'ve created your account at ${DateTime.now().toString()}'));
+      await addHistory(History(uid: uid, heading: 'Account Creation', body: 'You\'ve created your account at ${datetimeFormatter.format(DateTime.now())}'));
       result = 'SUCCESS';
       return result;
     } catch (e) {

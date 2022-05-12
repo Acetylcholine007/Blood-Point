@@ -19,8 +19,9 @@ class RequestViewer extends StatefulWidget {
   final String myBloodType;
   final AccountData myAccount;
   final bool isDonation;
+  final String myName;
 
-  const RequestViewer(this.request, {Key key, this.isDonation = false, this.account, this.myUid, this.myBloodType, this.myAccount}) : super(key: key);
+  const RequestViewer(this.request, {Key key, this.isDonation = false, this.account, this.myUid, this.myBloodType, this.myAccount, this.myName}) : super(key: key);
 
   @override
   _RequestViewerState createState() => _RequestViewerState();
@@ -55,7 +56,7 @@ class _RequestViewerState extends State<RequestViewer> {
                 } else {
                   donorIds.remove(widget.myUid);
                 }
-                String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid, widget.request.uid);
+                String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid, widget.request.uid, widget.account.fullName, widget.myName);
                 if(result == 'SUCCESS') {
                   setState(() => request.donorIds = donorIds);
                 } else {
@@ -89,7 +90,7 @@ class _RequestViewerState extends State<RequestViewer> {
         } else {
           donorIds.remove(widget.myUid);
         }
-        String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid, widget.request.uid);
+        String result = await DatabaseService.db.updateDonor(widget.request.rid, donorIds, widget.myUid, widget.request.uid, widget.account.fullName, widget.myName);
         if(result == 'SUCCESS') {
           setState(() => request.donorIds = donorIds);
         } else {
@@ -161,7 +162,7 @@ class _RequestViewerState extends State<RequestViewer> {
     } else {
       finalDonor = donorUid;
     }
-    String result = await DatabaseService.db.setFinalDonor(request.rid, finalDonor, widget.myUid, oldDonor);
+    String result = await DatabaseService.db.setFinalDonor(request.rid, finalDonor, widget.myUid, oldDonor, widget.account.fullName, widget.myName);
     if(result == 'SUCCESS') {
       setState(() {
         request.finalDonor = finalDonor;
@@ -193,7 +194,7 @@ class _RequestViewerState extends State<RequestViewer> {
         actions: [
           TextButton(onPressed: () async {
             Navigator.of(context).pop();
-            String result = await DatabaseService.db.removeRequest(request.rid, widget.myUid);
+            String result = await DatabaseService.db.removeRequest(request.rid, widget.myUid, request.bloodType);
             if(result == 'SUCCESS') {
               Navigator.of(pageContext).pop();
             } else {

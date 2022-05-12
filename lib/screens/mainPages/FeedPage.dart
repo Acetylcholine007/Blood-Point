@@ -24,7 +24,7 @@ class _FeedPageState extends State<FeedPage> {
     AccountData account = Provider.of<AccountData>(context);
     List<Request> requests = Provider.of<List<Request>>(context);
     List<Request> myRequest = requests != null ? requests.where((item) => item.uid == account.uid).toList() : [];
-    List<Request> myDonations = requests != null ? requests.where((item) => item.finalDonor == account.uid).toList() : [];
+    List<Request> myDonations = requests != null ? requests.where((item) => item.donorIds.contains(account.uid)).toList() : [];
 
     return DefaultTabController(
       length: 3,
@@ -70,7 +70,7 @@ class _FeedPageState extends State<FeedPage> {
                             return GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => RequestViewer(requests[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account)),
+                                MaterialPageRoute(builder: (context) => RequestViewer(requests[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account, myName: account.fullName)),
                               ),
                               child: RequestTile(requests[index], account: snapshot.data, myAccount: account),
                             );
@@ -91,7 +91,7 @@ class _FeedPageState extends State<FeedPage> {
                             return GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => RequestViewer(myRequest[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account)),
+                                MaterialPageRoute(builder: (context) => RequestViewer(myRequest[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account, myName: account.fullName)),
                               ),
                               child: RequestTile(myRequest[index], account: snapshot.data, myAccount: account),
                             );
@@ -112,12 +112,12 @@ class _FeedPageState extends State<FeedPage> {
                             return GestureDetector(
                               onTap: () => Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => RequestViewer(myDonations[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account, isDonation: true)),
+                                MaterialPageRoute(builder: (context) => RequestViewer(myDonations[index], account: snapshot.data, myUid: account.uid, myBloodType: account.bloodType, myAccount: account, isDonation: true, myName: account.fullName)),
                               ),
-                              child: RequestTile(myDonations[index], account: snapshot.data, myAccount: account),
+                              child: RequestTile(myDonations[index], account: snapshot.data, myAccount: account, forDonation: true),
                             );
                           } else {
-                            return RequestTile(myDonations[index], myAccount: account);
+                            return RequestTile(myDonations[index], myAccount: account, forDonation: true);
                           }
                         }
                     );

@@ -9,6 +9,7 @@ class DonationPreparation extends StatelessWidget {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ListTile(
           minLeadingWidth : 0,
@@ -29,7 +30,9 @@ class DonationPreparation extends StatelessWidget {
           subtitle: Text('Get a good night\'s sleep the night before your donation, eat healthy foods and drink extra liquids.'),
         ),
         SizedBox(height: 10),
-        Text('Source: National Voluntary Blood Services Program (NVBSP)', style: theme.textTheme.caption)
+        Text('Please see Help Page for more information', style: theme.textTheme.bodyText2.copyWith(color: theme.primaryColorDark)),
+        SizedBox(height: 10),
+        Text('Source: National Voluntary Blood Services Program (NVBSP)', style: theme.textTheme.caption.copyWith(fontStyle: FontStyle.italic))
       ],
     );
   }

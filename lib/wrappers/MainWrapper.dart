@@ -16,6 +16,8 @@ import 'package:blood_point/shared/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/Request.dart';
+
 class MainWrapper extends StatefulWidget {
   final Account account;
 
@@ -80,7 +82,22 @@ class _MainWrapperState extends State<MainWrapper> {
     final theme = Theme.of(context);
     final account = Provider.of<AccountData>(context);
     final notifications = Provider.of<List<AppNotification>>(context);
+    List<Request> requests = Provider.of<List<Request>>(context);
     final AuthService _auth = AuthService();
+
+    int getRequestCount() {
+      if(requests != null) {
+        return requests.where((request) => request.uid == account.uid).length;
+      }
+      return 0;
+    }
+
+    int getDonationCount() {
+      if(requests != null) {
+        return requests.where((request) => request.donorIds.contains(account.uid)).length;
+      }
+      return 0;
+    }
 
     return account == null || notifications == null ? Loading('Loading Account Data') : Builder(
       builder: (buildContext) {
@@ -200,7 +217,7 @@ class _MainWrapperState extends State<MainWrapper> {
                             backgroundColor: Colors.white,
                           ),
                           title: Text(account.fullName),
-                          subtitle: Text(account.email),
+                          subtitle: Text('Requests: ${getRequestCount()} • Donations: ${getDonationCount()}'),
                         )
                       ],
                     ),
