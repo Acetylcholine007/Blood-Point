@@ -64,7 +64,7 @@ class _LocationPickerState extends State<LocationPicker> {
         },
         initialCameraPosition: CameraPosition(
           target: _target,
-          zoom: 11.0,
+          zoom: 15.0,
         ),
       ),
     );

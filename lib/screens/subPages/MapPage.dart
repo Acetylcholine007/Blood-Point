@@ -1,3 +1,4 @@
+import 'package:blood_point/components/Loading.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -35,7 +36,7 @@ class _MapPageState extends State<MapPage> {
     // Generating the list of coordinates to be used for
     // drawing the polylines
     PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      'AIzaSyBrSj_sDdt92KatUAiuDpo1Fjk04Ms0ffY', // Google Maps API Key
+      'AIzaSyB8WUe83Z229hdernamqUTL-OtOfnBjrhk', // Google Maps API Key
       PointLatLng(startLatitude, startLongitude),
       PointLatLng(destinationLatitude, destinationLongitude),
       travelMode: TravelMode.transit,
@@ -71,7 +72,6 @@ class _MapPageState extends State<MapPage> {
     };
     _center = widget.origin;
     _lastMapPosition = widget.origin;
-    _createPolylines(widget.origin.latitude, widget.origin.longitude, widget.destination.latitude, widget.destination.longitude);
     super.initState();
   }
 
@@ -102,16 +102,26 @@ class _MapPageState extends State<MapPage> {
             label: Text(_currentMapType == MapType.normal ? 'Map View' : 'Satellite View'))
         ],
       ),
-      body: GoogleMap(
-        mapType: _currentMapType,
-        onMapCreated: _onMapCreated,
-        markers: _markers,
-        onCameraMove: _onCameraMove,
-        polylines: Set<Polyline>.of(polylines.values),
-        initialCameraPosition: CameraPosition(
-          target: _center,
-          zoom: 11.0,
-        ),
+      body: FutureBuilder(
+        future:
+        _createPolylines(widget.origin.latitude, widget.origin.longitude, widget.destination.latitude, widget.destination.longitude),
+        builder: (context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.done) {
+            return GoogleMap(
+              mapType: _currentMapType,
+              onMapCreated: _onMapCreated,
+              markers: _markers,
+              onCameraMove: _onCameraMove,
+              polylines: Set<Polyline>.of(polylines.values),
+              initialCameraPosition: CameraPosition(
+                target: _center,
+                zoom: 11.0,
+              ),
+            );
+          } else {
+            return Loading('Generating Route');
+          }
+        },
       ),
     );
   }

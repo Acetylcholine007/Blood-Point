@@ -18,8 +18,8 @@ class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   final AuthService _auth = AuthService();
 
-  Set<Marker> _markers = {Marker(markerId: MarkerId("location"), position: LatLng(45.521563, -122.677433))};
-  LatLng target = const LatLng(45.521563, -122.677433);
+  Set<Marker> _markers = {Marker(markerId: MarkerId("location"), position: LatLng(14.8434897, 120.8112473))};
+  LatLng target = const LatLng(14.8434897, 120.8112473);
   String email = '';
   String password = '';
   String fullName = '';
