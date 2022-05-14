@@ -49,6 +49,7 @@ class _DonorPageState extends State<DonorPage> {
           ),
         ),
         body: TabBarView(
+          physics: NeverScrollableScrollPhysics(),
           children: [
             DonorList(accounts, account),
             DonorMap(accounts, account)

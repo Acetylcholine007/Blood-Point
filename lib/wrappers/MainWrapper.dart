@@ -160,7 +160,13 @@ class _MainWrapperState extends State<MainWrapper> {
                             context: context,
                             builder: (context) => AlertDialog(
                               title: Text(notifications[index].heading),
-                              content: notifications[index].heading.startsWith('Preparation') ? DonationPreparation() : Text(notifications[index].body),
+                              content: notifications[index].heading.startsWith('Preparation') ? DonationPreparation(
+                                  () {
+                                    Navigator.of(buildContext).pop();
+                                    Navigator.of(buildContext).pop();
+                                    setState(() => _currentIndex = 4);
+                                  }
+                              ) : Text(notifications[index].body),
                               actions: [
                                 TextButton(
                                     onPressed: () => deleteHandler(notifications[index].nid),

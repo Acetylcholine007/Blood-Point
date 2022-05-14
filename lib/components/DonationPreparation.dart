@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class DonationPreparation extends StatelessWidget {
-  const DonationPreparation({Key key}) : super(key: key);
+  final Function redirect;
+
+  const DonationPreparation(this.redirect, {Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,10 @@ class DonationPreparation extends StatelessWidget {
           subtitle: Text('Get a good night\'s sleep the night before your donation, eat healthy foods and drink extra liquids.'),
         ),
         SizedBox(height: 10),
-        Text('Please see Help Page for more information', style: theme.textTheme.bodyText2.copyWith(color: theme.primaryColorDark)),
+        TextButton(
+          onPressed: redirect,
+          child: Text('Tap to redirect to Help Page for more information')
+        ),
         SizedBox(height: 10),
         Text('Source: National Voluntary Blood Services Program (NVBSP)', style: theme.textTheme.caption.copyWith(fontStyle: FontStyle.italic))
       ],

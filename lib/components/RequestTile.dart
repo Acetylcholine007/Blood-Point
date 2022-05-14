@@ -35,7 +35,7 @@ class RequestTile extends StatelessWidget {
             SizedBox(height: 10),
             Text('Deadline: ${dateFormatter.format(request.deadline)}', style: theme.textTheme.bodyText1),
             SizedBox(height: 10),
-            forDonation ? Text('Status: ${request.finalDonor == "" ? "No chosen donor yet" :request.finalDonor == myAccount.uid ? 'You\'re chosen as the donor' : 'Seeker had chosen a different donor'}', style: theme.textTheme.bodyText1) : SizedBox.shrink(),
+            forDonation ? Text('Status: ${request.finalDonor == "" ? "Pending" :request.finalDonor == myAccount.uid ? 'Approved' : 'Seeker had chosen a different donor'}', style: theme.textTheme.bodyText1) : SizedBox.shrink(),
             Divider(color: theme.primaryColorDark),
             account == null ? LinearProgressIndicator() : Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

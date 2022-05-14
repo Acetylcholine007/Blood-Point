@@ -20,7 +20,7 @@ class DonationGuide extends StatelessWidget {
         ListTile(
           minLeadingWidth : 0,
           leading: CircleAvatar(child: Text('2'), radius: 12),
-          title: Text('Blood volume collected will depend mainly on you body weight.'),
+          title: Text('Blood volume collected will depend mainly on your body weight.'),
         ),
         ListTile(
           minLeadingWidth : 0,

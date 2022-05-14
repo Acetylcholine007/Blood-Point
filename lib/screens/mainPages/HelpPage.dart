@@ -26,7 +26,7 @@ class HelpPage extends StatelessWidget {
               radius: 16,
               child: Text('2'),
             ),
-            title: Text('Blood volume collected will depend mainly on you body weight.'),
+            title: Text('Blood volume collected will depend mainly on your body weight.'),
           ),
           ListTile(
             leading: CircleAvatar(

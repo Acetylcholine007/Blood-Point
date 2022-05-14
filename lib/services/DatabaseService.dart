@@ -249,7 +249,6 @@ class DatabaseService {
       if(donorIds.contains(uid)) {
         await addHistory(History(uid: uid, heading: 'Donation Offer', body: 'You\'ve offer your blood donation to a request created by ${seekerName}'));
         await addNotification(AppNotification(uid: ownerUid, heading: 'Donation Offer', body: '${donorName} offers to donate blood for your request'));
-        await addNotification(AppNotification(uid: uid, heading: 'Preparation Before Blood Donation', body: 'Here is the guide before blood donation'));
       } else {
         await addHistory(History(uid: uid, heading: 'Donation Retraction', body: 'You\'ve pulled out your blood donation offer to a request created by ${seekerName}'));
         await addNotification(AppNotification(uid: ownerUid, heading: 'Donation Retraction', body: '${donorName} pulled out donation offer for your request'));
@@ -268,6 +267,7 @@ class DatabaseService {
       await requestCollection.doc(rid).update({'finalDonor': finalDonor});
       await addHistory(History(uid: uid, heading: 'Donor Selection', body: 'You\'ve chosen $donorName as the blood donor'));
       await addNotification(AppNotification(uid: finalDonor, heading: 'Donation Selection', body: '$seekerName chose you as the donor'));
+      await addNotification(AppNotification(uid: finalDonor, heading: 'Preparation Before Blood Donation', body: 'Here is the guide before blood donation'));
       if(lastDonor != "") {
         await addNotification(AppNotification(uid: lastDonor, heading: 'Donation Selection', body: 'You are no longer the chosen donor for $seekerName'));
       }
