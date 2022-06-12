@@ -94,7 +94,7 @@ class _MainWrapperState extends State<MainWrapper> {
 
     int getDonationCount() {
       if(requests != null) {
-        return requests.where((request) => request.donorIds.contains(account.uid)).length;
+        return requests.where((request) => request.donorIds.contains(account.uid) && request.finalDonor == account.uid).length;
       }
       return 0;
     }
